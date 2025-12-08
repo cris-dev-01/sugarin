@@ -14,7 +14,7 @@
         "skipLibCheck": true,
         "baseUrl": "./",
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["resources/js/*"]
         },
         "noImplicitAny": false,
         "allowJs": true,

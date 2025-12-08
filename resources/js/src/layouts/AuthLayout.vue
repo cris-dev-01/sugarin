@@ -42,7 +42,7 @@
                 </button>
             </template>
         </div>
-        <router-view></router-view>
+        <slot/>
     </div>
 </template>
 <script setup lang="ts">
