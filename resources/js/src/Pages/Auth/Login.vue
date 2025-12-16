@@ -2,8 +2,6 @@
 import { Head } from "@inertiajs/vue3";
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import LoginForm from "@/Pages/Auth/Partials/Form/LoginForm.vue";
-   
- 
 </script>
 
 <template>
