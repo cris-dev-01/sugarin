@@ -108,6 +108,7 @@ export const useAppStore = defineStore('app', {
             }
         },
         toggleSidebar(state: boolean = false) {
+            alert('click')
             this.sidebar = !this.sidebar;
         },
         toggleMainLoader(state: boolean = false) {

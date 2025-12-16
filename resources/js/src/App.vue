@@ -10,7 +10,7 @@
 <script lang="ts" setup>
     import { computed } from 'vue';
 
-    import appLayout from '@/Layouts/app-layout.vue';
+    import appLayout from '@/Layouts/AppLayout.vue';
     import authLayout from '@/Layouts/AuthLayout.vue';
 
     import { useAppStore } from '@/stores/index';

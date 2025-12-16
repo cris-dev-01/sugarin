@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticateController;
+use App\Http\Controllers\DashboardController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -9,8 +11,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    // dd(auth()->user());
-    Route::get('/', function () {
-        return Inertia::render('Index');
-    });
+    Route::get('/', [DashboardController::class, 'index'])
+        ->name('index')
+        ->can('show-dashboard', User::class);
 });

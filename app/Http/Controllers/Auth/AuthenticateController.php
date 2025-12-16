@@ -35,7 +35,9 @@ class AuthenticateController extends Controller
         );
         $request->session()->regenerate();
 
-        return redirect()->intended('/');
+        return auth()->user()->hasRole('Administrator') ?
+            redirect()->intended('/') :
+            redirect()->to('/summary');
     }
 
     public function logout(Request $request): RedirectResponse
