@@ -1,12 +1,17 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 import { useAppStore } from '@/stores/index';
+import { usePage } from "@inertiajs/vue3";
 import { 
     ChartColumn,
     Cog,
     Droplets
 } from 'lucide-vue-next';
+import type { PageProps } from '@/types';
+
+const page = usePage<PageProps>();
 const store = useAppStore();
+const isAdministrator = computed(() => page.props.auth.user.role === 'Administrator' ? true : false);
 
 onMounted(() => {
     const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');
@@ -67,7 +72,10 @@ const toggleMobileMenu = () => {
                     class="h-[calc(100vh-80px)] relative"
                 >
                     <ul class="relative font-semibold space-y-0.5 p-4 py-0">
-                        <li class="menu nav-item">
+                        <li 
+                            v-if="isAdministrator"
+                            class="menu nav-item"
+                        >
                             <a href="/" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <ChartColumn
@@ -87,7 +95,10 @@ const toggleMobileMenu = () => {
                                 </div>
                             </a>
                         </li>
-                        <li class="menu nav-item">
+                        <li 
+                            v-if="isAdministrator"
+                            class="menu nav-item"
+                        >
                             <a href="/" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <Cog
@@ -97,7 +108,10 @@ const toggleMobileMenu = () => {
                                 </div>
                             </a>
                         </li>
-                        <li class="menu nav-item">
+                        <li 
+                            v-if="isAdministrator"
+                            class="menu nav-item"
+                        >
                             <a href="/" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <Droplets

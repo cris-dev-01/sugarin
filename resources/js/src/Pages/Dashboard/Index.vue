@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
-import { Head } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { 
     ChevronDown, 
     ChevronUp, 
@@ -12,7 +12,9 @@ import {
 import AppLayout from "@/Layouts/AppLayout.vue";
 import apexchart from 'vue3-apexcharts';
 import { useAppStore } from '@/stores/index';
+import type { PageProps } from '@/types';
 
+const page = usePage<PageProps>();
 const store = useAppStore();
 // unique visitors
     const uniqueVisitor = computed(() => {
