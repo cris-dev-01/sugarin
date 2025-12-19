@@ -80,29 +80,19 @@
             </template>
         </div>
 
-        <!-- BEGIN APP SETTING LAUNCHER -->
         <Setting />
-        <!-- END APP SETTING LAUNCHER -->
 
         <div class="main-container text-black dark:text-white-dark min-h-screen" :class="[store.navbar]">
-            <!--  BEGIN SIDEBAR  -->
             <Sidebar />
-            <!--  END SIDEBAR  -->
 
             <div class="main-content flex flex-col min-h-screen">
-                <!--  BEGIN TOP NAVBAR  -->
                 <Header />
-                <!--  END TOP NAVBAR  -->
 
-                <!--  BEGIN CONTENT AREA  -->
                 <div class="p-6 animation">
                     <slot/>
                 </div>
-                <!--  END CONTENT AREA  -->
 
-                <!-- BEGIN FOOTER -->
                 <Footer />
-                <!-- END FOOTER -->
             </div>
         </div>
     </div>

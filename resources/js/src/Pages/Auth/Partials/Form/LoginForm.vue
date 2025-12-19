@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { LockKeyhole, Mail } from 'lucide-vue-next';
+import { LoaderCircle, LockKeyhole, LogIn, Mail } from 'lucide-vue-next';
 import useVuelidate from "@vuelidate/core";
 import { useForm } from "@inertiajs/vue3";
 import { required, email } from "@vuelidate/validators";
@@ -88,8 +88,17 @@ const handleForm = async () => {
             </small>
         </div>
       
-        <button type="submit" class="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
-            Iniciar sesión
+        <button type="submit" class="btn btn-gradient !mt-6 flex gap-2 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
+            <LogIn
+                v-if="!form.processing"
+                :size="16"
+            />
+            <LoaderCircle
+                v-else
+                class="animate-spin"
+                :size="16"
+            />
+            {{ form.processing ? 'Accediendo...' : 'Iniciar sesión' }}
         </button>
     </form>
 </template>
