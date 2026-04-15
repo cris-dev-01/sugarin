@@ -19,6 +19,12 @@ class PermissionsSeeder extends Seeder
             ['name' => 'show-summary', 'guard_name' => 'web'],
             ['name' => 'create-glucose-logs', 'guard_name' => 'web'],
             ['name' => 'show-glucose-logs', 'guard_name' => 'web'],
+
+            ['name' => 'show-glucose-ranges', 'guard_name' => 'web'],
+            ['name' => 'create-glucose-ranges', 'guard_name' => 'web'],
+            ['name' => 'update-glucose-ranges', 'guard_name' => 'web'],
+            ['name' => 'delete-glucose-ranges', 'guard_name' => 'web'],
+            
         ])->each(function (array $permission) {
             Permission::query()->create($permission);
         });

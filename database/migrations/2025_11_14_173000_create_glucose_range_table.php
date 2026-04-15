@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('glucose_range', function (Blueprint $table) {
+        Schema::create('glucose_ranges', function (Blueprint $table) {
             $table->id();
             $table->smallInteger('min_fasting_value');
             $table->smallInteger('max_fasting_value');
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('glucose_range');
+        Schema::dropIfExists('glucose_ranges');
     }
 };

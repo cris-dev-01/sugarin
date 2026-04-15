@@ -567,7 +567,13 @@
                                         </router-link>
                                     </li>
                                     <li class="border-t border-white-light dark:border-white-light/10">
-                                        <router-link to="/auth/boxed-signin" class="text-danger !py-3" @click="close()">
+                                        <Link
+                                            :href="route('logout')"
+                                            method="post"
+                                            as="button"
+                                            class="text-danger !py-3 w-full text-left" 
+                                            @click="close()"
+                                        >
                                             <svg
                                                 class="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 rotate-90 shrink-0"
                                                 width="18"
@@ -593,7 +599,7 @@
                                             </svg>
 
                                             Sign Out
-                                        </router-link>
+                                        </Link>
                                     </li>
                                 </ul>
                             </template>
@@ -1298,13 +1304,16 @@
 <script lang="ts" setup>
     import { ref, onMounted, computed, reactive, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
+    import { Link } from '@inertiajs/vue3';
 
     import appSetting from '@/app-setting';
 
-    import { useRoute } from 'vue-router';
+    import { useRoute as useVueRoute } from 'vue-router';
+    import { useZiggyRoute } from '@/composables/useRoute';
     import { useAppStore } from '@/stores/index';
     const store = useAppStore();
-    const route = useRoute();
+    const vueRoute = useVueRoute();
+    const route = useZiggyRoute();
     const search = ref(false);
 
     // multi language

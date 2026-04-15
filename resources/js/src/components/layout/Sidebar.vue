@@ -12,6 +12,7 @@ import type { PageProps } from '@/types';
 const page = usePage<PageProps>();
 const store = useAppStore();
 const isAdministrator = computed(() => page.props.auth.user.role === 'Administrator' ? true : false);
+const isPatient = computed(() => page.props.auth.user.role === 'Patient' ? true : false);
 
 onMounted(() => {
     const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');
@@ -85,6 +86,19 @@ const toggleMobileMenu = () => {
                                 </div>
                             </a>
                         </li>
+                        <li 
+                            v-if="isPatient"
+                            class="menu nav-item"
+                        >
+                            <a href="/summary" class="nav-link group" @click="toggleMobileMenu">
+                                <div class="flex items-center">
+                                    <ChartColumn
+                                        :size="20"
+                                    />
+                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Mi Resumen</span>
+                                </div>
+                            </a>
+                        </li>
                         <li class="menu nav-item">
                             <a href="/" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
@@ -99,12 +113,14 @@ const toggleMobileMenu = () => {
                             v-if="isAdministrator"
                             class="menu nav-item"
                         >
-                            <a href="/" class="nav-link group" @click="toggleMobileMenu">
+                            <a href="/glucose-ranges" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <Cog
                                         :size="20"
                                     />
-                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Parámetros</span>
+                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">
+                                        Parámetros
+                                    </span>
                                 </div>
                             </a>
                         </li>

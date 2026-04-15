@@ -12,6 +12,7 @@
 
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet">
 
+    @routes
     @vite(['resources/js/src/main.ts'])
     @inertiaHead
 </head>
