@@ -1,23 +1,27 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
 import { 
-    X
+    XIcon
 } from 'lucide-vue-next';
-import CreationForm from '@/Pages/GlucoseRanges/Partials/Creation/Form/CreationForm.vue';
-import { useAppStore } from '@/stores/index';
+import EditionForm from '@/components/glucose-ranges/form/EditionForm.vue';
+import type { GlucoseRange } from "@/types";
 
 const props = defineProps<{
     isOpen: boolean;
+    range: GlucoseRange | null;
 }>();
-const store = useAppStore();
 
 const emit = defineEmits<{
-    (e: "toggleCreationSlideover", value: boolean): void;
+    (e: "toggleEditionSlideover", range: GlucoseRange | null): void;
+    (e: "updateGlucoseRanges", range: GlucoseRange): void;
     (e: "showNotification", message: string, type: string): void;
 }>();
 
 const toggleSlideover = () => {
-    emit('toggleCreationSlideover', false);
+    emit('toggleEditionSlideover', null);
+};
+
+const updateGlucoseRanges = (range: GlucoseRange) => {
+    emit("updateGlucoseRanges", range);
 };
 
 const showNotification = (message: string, type: string) => {
@@ -51,16 +55,19 @@ const showNotification = (message: string, type: string) => {
                             class="absolute top-0 ltr:right-0 rtl:left-0 opacity-30 hover:opacity-100 dark:text-white"
                             @click="toggleSlideover"
                         >
-                            <X
+                            <XIcon
                                 :size="22"
                             />
                         </a>
-                        <h4 class="mb-1 dark:text-white">Creación de nuevo rango de glucosa</h4>
+                        <h4 class="mb-1 dark:text-white">Edición de rango de glucosa</h4>
                         <p class="text-white-dark">Rango para ayunas y normal.</p>
                     </div>
                     <div class="rounded-md mb-3 p-3">
-                        <CreationForm
+                        <EditionForm
+                            v-if="props.range"
+                            :range="props.range"
                             @showNotification="showNotification"
+                            @updateGlucoseRanges="updateGlucoseRanges"
                             @toggleSlideover="toggleSlideover"
                         />
                     </div>

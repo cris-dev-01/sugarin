@@ -22,19 +22,13 @@ Route::middleware('auth')->group(function () {
         ->name('index')
         ->can('show-summary', User::class);
 
-    Route::prefix('glucose')->name('glucose.')
-        ->controller(GlucoseController::class)
-            ->group(function () {
-                Route::get('/', 'index')->name('index');
-                Route::get('/list', 'list')->name('list');
-                Route::get('/profile/{id}', 'show')->name('show');
-            });
-
     Route::prefix('glucose-ranges')->name('glucose-ranges.')
         ->controller(GlucoseRangeController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('index')->can('show-glucose-ranges', GlucoseRange::class);
-                Route::post('/store', 'store')->name('store')->can('create-glucose-ranges', GlucoseRange::class);
+                Route::post('/', 'store')->name('store')->can('create-glucose-ranges', GlucoseRange::class);
+                Route::put('/{id}', 'update')->name('update')->can('update-glucose-ranges', GlucoseRange::class);
+                Route::delete('/{id}', 'destroy')->name('destroy')->can('delete-glucose-ranges', GlucoseRange::class);
             });
 
     Route::post('logout', [AuthenticateController::class, 'logout'])->name('logout');

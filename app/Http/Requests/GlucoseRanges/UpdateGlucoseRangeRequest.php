@@ -7,11 +7,11 @@ namespace App\Http\Requests\GlucoseRanges;
 use App\Models\GlucoseRange;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreGlucoseRangeRequest extends FormRequest
+class UpdateGlucoseRangeRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('create-glucose-ranges', GlucoseRange::class);
+        return $this->user()->can('update-glucose-ranges', GlucoseRange::class);
     }
 
     public function rules(): array

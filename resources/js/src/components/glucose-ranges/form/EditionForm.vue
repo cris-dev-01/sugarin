@@ -10,13 +10,17 @@ import {
     Info,
     LoaderCircle
 } from 'lucide-vue-next';
-import type { FormGlucoseRanges } from "@/types";
+import type { FormGlucoseRanges, GlucoseRange } from "@/types";
+
+const props = defineProps<{
+    range: GlucoseRange;
+}>();
 
 const form = useForm<FormGlucoseRanges>({
-    min_fasting_value: null,
-    max_fasting_value: null,
-    min_non_fasting_value: null,
-    max_non_fasting_value: null,
+    min_fasting_value: props.range.min_fasting_value,
+    max_fasting_value: props.range.max_fasting_value,
+    min_non_fasting_value: props.range.min_non_fasting_value,
+    max_non_fasting_value: props.range.max_non_fasting_value,
 });
 const rules = computed(() => ({
     min_fasting_value: {
@@ -44,6 +48,7 @@ const v$ = useVuelidate(rules, form);
 
 const emit = defineEmits<{
     (e: "showNotification", message: string, type: string): void;
+    (e: "updateGlucoseRanges", range: GlucoseRange): void;
     (e: "toggleSlideover", value: boolean): void;
 }>();
 
@@ -53,20 +58,20 @@ const handleForm = async () => {
     if (!v$.value.$invalid) {
         v$.value.$reset();
 
-        form.post(`/glucose-ranges/store`, {
+        form.put(`/glucose-ranges/${props.range.id}`, {
             onSuccess: (data: any) => {
-                form.reset();
                 emit(
                     "showNotification",
-                    "Los rangos fueron creados correctamente.",
+                    "Los rangos fueron actualizados correctamente.",
                     "success",
                 );
+                emit("updateGlucoseRanges", data.props.flash.response);
                 emit("toggleSlideover", false);
             },
             onError: (error) => {
                 emit(
                     "showNotification",
-                    "No fue posible crear este rango, verifica los datos.",
+                    "No fue posible actualizar este rango, verifica los datos.",
                     "error",
                 );
             },
@@ -78,7 +83,7 @@ const handleForm = async () => {
 <template>
     <form 
         @submit.prevent="handleForm" 
-        id="create-glucose-ranges-form"
+        id="edit-glucose-ranges-form"
     >
         <div>
             <label class="mb-4 text-base dark:text-white leading-none">
@@ -239,8 +244,7 @@ const handleForm = async () => {
 
         <div>
             <small class="text-danger">
-                
-                <span class="flex font-semibold" if="(form.errors as any).duplicate">
+                <span class="flex font-semibold" v-if="(form.errors as any).duplicate">
                     <Info
                         icon="AlertCircle"
                         class="mr-2 h-5 w-5 stroke-[1.5]"
@@ -250,7 +254,7 @@ const handleForm = async () => {
             </small>
         </div>
 
-        <div class="flex justify-end border-t mt-7 pt-4">
+        <div class="flex justify-end border-t dark:border-gray-700 mt-7 pt-4">
             <button 
                 type="submit" 
                 class="btn btn-primary"
@@ -267,7 +271,7 @@ const handleForm = async () => {
                     class="animate-spin"
                     :size="16"
                 />
-                Crear rango
+                Editar rango
             </button>
         </div>
     </form>
