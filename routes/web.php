@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GlucoseRangeController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientSummaryController;
 use App\Models\GlucoseRange;
 use App\Models\User;
@@ -29,6 +30,13 @@ Route::middleware('auth')->group(function () {
                 Route::post('/', 'store')->name('store')->can('create-glucose-ranges', GlucoseRange::class);
                 Route::put('/{id}', 'update')->name('update')->can('update-glucose-ranges', GlucoseRange::class);
                 Route::delete('/{id}', 'destroy')->name('destroy')->can('delete-glucose-ranges', GlucoseRange::class);
+            });
+
+    Route::prefix('patients')->name('patients.')
+        ->controller(PatientController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index')->can('show-patients', User::class);
+                Route::post('/', 'store')->name('store')->can('create-patients', User::class);
             });
 
     Route::post('logout', [AuthenticateController::class, 'logout'])->name('logout');

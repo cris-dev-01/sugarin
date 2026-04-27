@@ -17,6 +17,7 @@ class UpdateGlucoseRangeRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "alias" => "required|string|max:50|unique:glucose_ranges,alias," . $this->route('id'),
             "min_fasting_value" => "required|numeric|min:60|max:500",
             "max_fasting_value" => "required|numeric|min:60|max:500|gt:min_fasting_value",
             "min_non_fasting_value" => "required|numeric|min:60|max:500",
@@ -32,6 +33,7 @@ class UpdateGlucoseRangeRequest extends FormRequest
             'min' => 'El valor debe ser desde :min.',
             'max' => 'El valor debe ser hasta :max.',
             'gt' => 'El valor máximo debe ser mayor que :value.',
+            'unique' => 'El alias ya está en uso.',
         ];
     }
 
@@ -42,6 +44,7 @@ class UpdateGlucoseRangeRequest extends FormRequest
                 ->where('max_fasting_value', $this->input('max_fasting_value'))
                 ->where('min_non_fasting_value', $this->input('min_non_fasting_value'))
                 ->where('max_non_fasting_value', $this->input('max_non_fasting_value'))
+                ->where('id', '!=', $this->route('id'))
                 ->exists();
             if ($exists) {
                 $validator->errors()->add('duplicate', 'Ya existe un rango de glucosa con estos valores.');

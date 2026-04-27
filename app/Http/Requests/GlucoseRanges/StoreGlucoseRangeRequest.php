@@ -17,6 +17,7 @@ class StoreGlucoseRangeRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "alias" => "required|string|max:50|unique:glucose_ranges,alias",
             "min_fasting_value" => "required|numeric|min:60|max:500",
             "max_fasting_value" => "required|numeric|min:60|max:500|gt:min_fasting_value",
             "min_non_fasting_value" => "required|numeric|min:60|max:500",
@@ -32,6 +33,7 @@ class StoreGlucoseRangeRequest extends FormRequest
             'min' => 'El valor debe ser desde :min.',
             'max' => 'El valor debe ser hasta :max.',
             'gt' => 'El valor máximo debe ser mayor que :value.',
+            'unique' => 'El alias ya está en uso.',
         ];
     }
 

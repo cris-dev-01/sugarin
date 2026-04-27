@@ -18,6 +18,7 @@ class GlucoseRange extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'alias',
         'min_fasting_value',
         'max_fasting_value',
         'min_non_fasting_value',

@@ -5,7 +5,8 @@ import { usePage } from "@inertiajs/vue3";
 import { 
     ChartColumn,
     Cog,
-    Droplets
+    Droplets,
+    UsersRound
 } from 'lucide-vue-next';
 import type { PageProps } from '@/types';
 
@@ -128,9 +129,9 @@ const toggleMobileMenu = () => {
                             v-if="isAdministrator"
                             class="menu nav-item"
                         >
-                            <a href="/" class="nav-link group" @click="toggleMobileMenu">
+                            <a href="/patients" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
-                                    <Droplets
+                                    <UsersRound
                                         :size="20"
                                     />
                                     <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Pacientes</span>

@@ -6,14 +6,15 @@ import {
     Plus,
 } from 'lucide-vue-next';
 import AppLayout from "@/Layouts/AppLayout.vue";
-import CreationSlideover from '@/components/glucose-ranges/slideover/CreationSlideover.vue';
-import DeleteModal from '@/components/glucose-ranges/modal/DeleteModal.vue';
-import EditionSlideover from '@/components/glucose-ranges/slideover/EditionSlideover.vue';
+import CreationSlideover from '@/components/patients/slideover/CreationSlideover.vue';
+import DeleteModal from '@/components/patients/modal/DeleteModal.vue';
+import EditionSlideover from '@/components/patients/slideover/EditionSlideover.vue';
 import Notification from "@/components/Base/Notification/Notification.vue";
 import Vue3Datatable from '@bhplugin/vue3-datatable';
-import type { GlucoseRange, Notification as NotificationType } from "@/types";
+import type { GlucoseRange, User, Notification as NotificationType } from "@/types";
 
 const props = defineProps<{
+    patients: User[];
     glucoseRanges: GlucoseRange[];
 }>();
 const paginationLang = ref({
@@ -43,22 +44,29 @@ const cols = ref([
         width: '80px'
     },
     { 
-        field: 'alias', 
-        title: 'Alias',
+        field: 'name', 
+        title: 'Nombres',
         slotMode: true,
         filter: false,
         sort: false
     },
     { 
-        field: 'fasting_range', 
-        title: 'Rango Glucosa en Ayuno (mg/dL)',
+        field: 'email', 
+        title: 'E-mail contacto',
         slotMode: true,
         filter: false,
         sort: false
     },
     { 
-        field: 'non_fasting_range', 
-        title: 'Rango Glucosa Normal (mg/dL)',
+        field: 'document', 
+        title: 'Rut',
+        slotMode: true,
+        filter: false,
+        sort: false
+    },
+    { 
+        field: 'illness_found_at', 
+        title: 'Información debut',
         slotMode: true,
         filter: false,
         sort: false
@@ -73,13 +81,13 @@ const cols = ref([
     },
 ]) || [];
 
-const rows = computed(() => props.glucoseRanges || []);
+const rows = computed(() => props.patients || []);
 const notificationIsOpen = ref(false);
 const notification = ref<NotificationType>({ messageNotification: '', typeNotification: '' });
 const showCreationSlideover = ref(false);
 const showEditionSlideover = ref(false);
 const showDeleteModal = ref(false);
-const selectedRange = ref<GlucoseRange | null>(null);
+const selectedPatient = ref<User | null>(null);
 
 const toggleCreationSlideover = () => {
     showCreationSlideover.value = !showCreationSlideover.value;
@@ -90,42 +98,42 @@ const showNotification = (message: string, type: string) => {
     notificationIsOpen.value = true;
 };
 
-const toggleEditionSlideover = (range: GlucoseRange | null) => {
-    selectedRange.value = range;
+const toggleEditionSlideover = (patient: User | null) => {
+    selectedPatient.value = patient;
     showEditionSlideover.value = !showEditionSlideover.value;
 };
 
-const updateGlucoseRanges = (range: GlucoseRange) => {
-    const index = props.glucoseRanges.findIndex(r => r.id === range.id);
+const updatePatients = (patient: User) => {
+    const index = props.patients.findIndex(p => p.id === patient.id);
     if (index !== -1) {
-        props.glucoseRanges[index] = range;
+        props.patients[index] = patient;
     }
 };
 
-const toggleDeleteModal = (range: GlucoseRange | null) => {
-    selectedRange.value = range;
+const toggleDeleteModal = (patient: User | null) => {
+    selectedPatient.value = patient;
     showDeleteModal.value = !showDeleteModal.value;
 };
 
-const removeGlucoseRanges = (range: GlucoseRange) => {
-    const index = props.glucoseRanges.findIndex(r => r.id === range.id);
+const removePatients = (patient: User) => {
+    const index = props.patients.findIndex(p => p.id === patient.id);
     if (index !== -1) {
-        props.glucoseRanges.splice(index, 1);
+        props.patients.splice(index, 1);
     }
 };
 </script>
 
 <template>
-    <Head title="Parámetros" />
+    <Head title="Pacientes" />
     <AppLayout>
         <div>
             <ul class="flex space-x-2 rtl:space-x-reverse">
                 <li>
-                    <span>Parámetros</span>
+                    <span>Pacientes</span>
                 </li>
             </ul>
             <div class="panel mt-6 pb-0">
-                <h5 class="mb-5 text-lg font-semibold dark:text-white-light">Rangos de glucosa disponibles</h5>
+                <h5 class="mb-5 text-lg font-semibold dark:text-white-light">Pacientes registrados</h5>
                 <div class="flex justify-end">
                     <button 
                         type="button" 
@@ -136,7 +144,7 @@ const removeGlucoseRanges = (range: GlucoseRange) => {
                             class="mr-1"
                             :size="16"
                         />
-                        Crear nuevo rango
+                        Registrar nuevo paciente
                     </button>
                 </div>
                 
@@ -146,7 +154,7 @@ const removeGlucoseRanges = (range: GlucoseRange) => {
                         class="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500"
                     >
                         <InboxIcon :size="36" class="mb-4 opacity-40" />
-                        <p class="text-base font-medium">No hay datos disponibles.</p>
+                        <p class="text-base font-medium">No hay pacientes registrados.</p>
                     </div>
 
                     <vue3-datatable
@@ -163,19 +171,34 @@ const removeGlucoseRanges = (range: GlucoseRange) => {
                         previousArrow='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 rtl:rotate-180"> <path d="M15 5L9 12L15 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </svg>'
                         nextArrow='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 rtl:rotate-180"> <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </svg>'
                     >
-                        <template #fasting_range="data">
-                            <div class="flex items-center gap-1">
-                                <span class="font-semibold text-warning">{{ data.value.min_fasting_value }}</span>
-                                <span class="text-gray-500">-</span>
-                                <span class="font-semibold text-warning">{{ data.value.max_fasting_value }}</span>
+                        <template #name="data">
+                            <div class="flex items-center gap-2">
+                                <div class="w-9 h-9 rounded-full bg-gray-400 flex items-center justify-center text-white">
+                                    {{ data.value.name.charAt(0).toUpperCase() }}
+                                </div>
+                                <span class="font-semibold">{{ data.value.name }}</span>
                             </div>
                         </template>
 
-                        <template #non_fasting_range="data">
+                        <template #email="data">
                             <div class="flex items-center gap-1">
-                                <span class="font-semibold text-primary">{{ data.value.min_non_fasting_value }}</span>
-                                <span class="text-gray-500">-</span>
-                                <span class="font-semibold text-primary">{{ data.value.max_non_fasting_value }}</span>
+                                <a class="text-primary hover:underline" :href="`mailto:${data.value.email}`">{{ data.value.email }}</a>
+                            </div>
+                        </template>
+
+                        <template #document="data">
+                            <div class="flex items-center gap-1">
+                                <span class="font-semibold">{{ data.value.patient.document_type }}</span>:
+                                <span class="font-semibold">{{ data.value.patient.document }}</span>
+                            </div>
+                        </template>
+
+                        <template #illness_found_at="data">
+                            <div class="flex items-center gap-1">
+                                <span class="badge badge-outline-danger">
+                                    <b>{{ data.value.patient.initial_max_glucose_value }}</b>
+                                    DESCUBIERTO EL {{ new Date(data.value.patient.illness_found_at).toLocaleDateString() }}
+                                </span>
                             </div>
                         </template>
 
@@ -204,11 +227,12 @@ const removeGlucoseRanges = (range: GlucoseRange) => {
 
         <CreationSlideover
             :isOpen="showCreationSlideover"
+            :glucoseRanges="props.glucoseRanges"
             @toggleCreationSlideover="toggleCreationSlideover"
             @showNotification="showNotification"
         />
 
-        <EditionSlideover
+        <!-- <EditionSlideover
             :isOpen="showEditionSlideover"
             :range="selectedRange"
             @toggleEditionSlideover="toggleEditionSlideover"
@@ -223,7 +247,7 @@ const removeGlucoseRanges = (range: GlucoseRange) => {
             @showNotification="showNotification"
             @removeGlucoseRanges="removeGlucoseRanges"
             @toggleDeleteModal="toggleDeleteModal"
-        />
+        /> -->
 
         <Notification
             :isOpen="notificationIsOpen"

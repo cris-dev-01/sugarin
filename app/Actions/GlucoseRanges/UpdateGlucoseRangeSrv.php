@@ -39,11 +39,8 @@ class UpdateGlucoseRangeSrv
 
     private function update(UpdateGlucoseRangeDto $dto): void
     {
-        $this->glucoseRange->update([
-            'min_fasting_value' => $dto->min_fasting_value,
-            'max_fasting_value' => $dto->max_fasting_value,
-            'min_non_fasting_value' => $dto->min_non_fasting_value,
-            'max_non_fasting_value' => $dto->max_non_fasting_value,
-        ]);
+        $this->glucoseRange->update(
+            $dto->toArray()
+        );
     }
 }

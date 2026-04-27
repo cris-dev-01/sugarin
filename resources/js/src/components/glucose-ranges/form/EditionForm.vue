@@ -2,13 +2,14 @@
 import { computed } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { useForm } from "@inertiajs/vue3";
-import { required, minValue, maxValue, helpers } from "@vuelidate/validators";
+import { required, maxLength, maxValue, minValue, helpers } from "@vuelidate/validators";
 import { 
     Check,
     ChevronDown, 
     ChevronUp, 
     Info,
-    LoaderCircle
+    LoaderCircle,
+    Quote
 } from 'lucide-vue-next';
 import type { FormGlucoseRanges, GlucoseRange } from "@/types";
 
@@ -21,6 +22,7 @@ const form = useForm<FormGlucoseRanges>({
     max_fasting_value: props.range.max_fasting_value,
     min_non_fasting_value: props.range.min_non_fasting_value,
     max_non_fasting_value: props.range.max_non_fasting_value,
+    alias: props.range.alias,
 });
 const rules = computed(() => ({
     min_fasting_value: {
@@ -42,6 +44,10 @@ const rules = computed(() => ({
         required: helpers.withMessage('El valor máximo no ayuno es requerido', required),
         minValue: helpers.withMessage('El valor debe ser desde 60', minValue(60)),
         maxValue: helpers.withMessage('El valor no debe superar 500', maxValue(500)),
+    },
+    alias: {
+        required: helpers.withMessage('El alias es requerido.', required),
+        maxLength: helpers.withMessage('El alias no debe superar 50 caracteres.', maxLength(50)),
     },
 }));
 const v$ = useVuelidate(rules, form);
@@ -238,6 +244,47 @@ const handleForm = async () => {
                         class="mr-2 h-5 w-5 stroke-[1.5]"
                     />
                     {{ (form.errors as any).max_non_fasting_value }}
+                </span>
+            </small>
+        </div>
+
+        <div class="mt-5">
+            <label class="mb-4 text-base dark:text-white leading-none">
+                Alias
+                <span class="text-danger">*</span>
+            </label>
+            <div class="flex mb-1">
+                <div class="flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0">
+                    <Quote
+                        :size="20"
+                    />
+                </div>
+                <input 
+                    id="alias" 
+                    name="alias" 
+                    type="text" 
+                    placeholder="Alias"
+                    v-model="v$.alias.$model"
+                    class="form-input ltr:rounded-l-none rtl:rounded-r-none"
+                    :class="{
+                        'border-danger': (v$.alias.$invalid && v$.alias.$dirty) || (form.errors as any).alias
+                    }"
+                />
+            </div>
+            <small class="text-danger">
+                <span class="flex font-semibold" v-if="v$.alias.$invalid && v$.alias.$dirty">
+                    <Info
+                        icon="AlertCircle"
+                        class="mr-2 h-5 w-5 stroke-[1.5]"
+                    />
+                    {{ v$.alias.$errors[0]?.$message }} 
+                </span>
+                <span class="flex font-semibold" v-else-if="(form.errors as any).alias">
+                    <Info
+                        icon="AlertCircle"
+                        class="mr-2 h-5 w-5 stroke-[1.5]"
+                    />
+                    {{ (form.errors as any).alias }} 
                 </span>
             </small>
         </div>

@@ -59,6 +59,7 @@ const handleForm = async () => {
         </div>
         <GlucoseRangesCard 
             :range="props.range"
+            :classNames="'flex flex-col md:flex-row gap-4'"
         />
         <div class="flex justify-end items-center border-t dark:border-gray-700 dark:text-white mt-7 pt-4">
             <button 

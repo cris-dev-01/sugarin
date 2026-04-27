@@ -9,11 +9,14 @@ import type { GlucoseRange } from "@/types";
 
 const props = defineProps<{
     range: GlucoseRange;
+    classNames: string;
 }>();
 </script>
 
 <template>
-    <div class="flex flex-col md:flex-row gap-4">
+    <div 
+        :class="props.classNames"
+    >
         <div class="w-full rounded-md bg-white px-4 py-2.5 shadow dark:bg-[#060818]">
             <span class="mb-4 flex items-center justify-between dark:text-white">
                 Ayuno

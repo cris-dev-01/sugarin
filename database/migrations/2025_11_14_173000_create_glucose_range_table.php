@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('glucose_ranges', function (Blueprint $table) {
             $table->id();
+            $table->string('alias', 50)->unique();
             $table->smallInteger('min_fasting_value');
             $table->smallInteger('max_fasting_value');
             $table->smallInteger('min_non_fasting_value');
