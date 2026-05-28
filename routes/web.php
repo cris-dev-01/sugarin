@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
         ->controller(PatientController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('index')->can('show-patients', User::class);
+                Route::get('/{document}', 'checkPatient')->name('checkPatient')->can('create-patients', User::class);
                 Route::post('/', 'store')->name('store')->can('create-patients', User::class);
             });
 

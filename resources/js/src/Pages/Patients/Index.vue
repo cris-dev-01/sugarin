@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
-import { Head } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { 
+    CircleSlash,
     InboxIcon,
     Plus,
 } from 'lucide-vue-next';
@@ -11,12 +12,13 @@ import DeleteModal from '@/components/patients/modal/DeleteModal.vue';
 import EditionSlideover from '@/components/patients/slideover/EditionSlideover.vue';
 import Notification from "@/components/Base/Notification/Notification.vue";
 import Vue3Datatable from '@bhplugin/vue3-datatable';
-import type { GlucoseRange, User, Notification as NotificationType } from "@/types";
+import type { GlucoseRange, User, Notification as NotificationType, PageProps } from "@/types";
 
 const props = defineProps<{
     patients: User[];
     glucoseRanges: GlucoseRange[];
 }>();
+const page = usePage<PageProps>();
 const paginationLang = ref({
     paginationInfo: "Mostrando {0} a {1} de {2} registros",
     noDataContent: "No hay datos disponibles"
@@ -39,9 +41,16 @@ const columnFilterLang = ref({
 const cols = ref([
     { 
         field: 'id', 
-        title: 'ID', 
+        title: '#', 
         isUnique: true,
         width: '80px'
+    },
+    { 
+        field: 'document', 
+        title: 'Rut',
+        slotMode: true,
+        filter: false,
+        sort: false
     },
     { 
         field: 'name', 
@@ -53,13 +62,6 @@ const cols = ref([
     { 
         field: 'email', 
         title: 'E-mail contacto',
-        slotMode: true,
-        filter: false,
-        sort: false
-    },
-    { 
-        field: 'document', 
-        title: 'Rut',
         slotMode: true,
         filter: false,
         sort: false
@@ -81,13 +83,19 @@ const cols = ref([
     },
 ]) || [];
 
-const rows = computed(() => props.patients || []);
+const rows = computed(() =>
+    (props.patients || []).map((patient, index) => ({ ...patient, rowNumber: index + 1 }))
+);
 const notificationIsOpen = ref(false);
 const notification = ref<NotificationType>({ messageNotification: '', typeNotification: '' });
 const showCreationSlideover = ref(false);
 const showEditionSlideover = ref(false);
 const showDeleteModal = ref(false);
 const selectedPatient = ref<User | null>(null);
+
+const checkPermission = (permission: string) => {
+    return page.props.auth.user && page.props.auth.user.permissions.includes(permission);
+};
 
 const toggleCreationSlideover = () => {
     showCreationSlideover.value = !showCreationSlideover.value;
@@ -136,6 +144,7 @@ const removePatients = (patient: User) => {
                 <h5 class="mb-5 text-lg font-semibold dark:text-white-light">Pacientes registrados</h5>
                 <div class="flex justify-end">
                     <button 
+                        v-if="checkPermission('create-patients')"
                         type="button" 
                         class="btn btn-primary"
                         @click="toggleCreationSlideover"
@@ -146,6 +155,23 @@ const removePatients = (patient: User) => {
                         />
                         Registrar nuevo paciente
                     </button>
+                    <div 
+                        v-else 
+                        v-tippy="'No tienes permiso para registrar pacientes'" 
+                        class="inline-block"
+                    >
+                        <button 
+                            type="button" 
+                            class="btn btn-primary"
+                            disabled
+                            >
+                            <Plus
+                                class="mr-1"
+                                :size="16"
+                            />
+                            Registrar nuevo paciente
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="datatable mt-6">
@@ -171,6 +197,17 @@ const removePatients = (patient: User) => {
                         previousArrow='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 rtl:rotate-180"> <path d="M15 5L9 12L15 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </svg>'
                         nextArrow='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 rtl:rotate-180"> <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </svg>'
                     >
+                        <template #id="data">
+                            <div class="flex items-center gap-1">
+                                <span class="font-semibold">{{ data.value.rowNumber }}</span>
+                            </div>
+                        </template>
+                        <template #document="data">
+                            <div class="flex items-center gap-1">
+                                <span class="font-semibold">{{ data.value.patient.formatted_document }}</span>
+                            </div>
+                        </template>
+
                         <template #name="data">
                             <div class="flex items-center gap-2">
                                 <div class="w-9 h-9 rounded-full bg-gray-400 flex items-center justify-center text-white">
@@ -186,19 +223,12 @@ const removePatients = (patient: User) => {
                             </div>
                         </template>
 
-                        <template #document="data">
-                            <div class="flex items-center gap-1">
-                                <span class="font-semibold">{{ data.value.patient.document_type }}</span>:
-                                <span class="font-semibold">{{ data.value.patient.document }}</span>
-                            </div>
-                        </template>
-
                         <template #illness_found_at="data">
                             <div class="flex items-center gap-1">
                                 <span class="badge badge-outline-danger">
                                     <b>{{ data.value.patient.initial_max_glucose_value }}</b>
-                                    DESCUBIERTO EL {{ new Date(data.value.patient.illness_found_at).toLocaleDateString() }}
                                 </span>
+                                descubierto el {{ new Date(data.value.patient.illness_found_at).toLocaleDateString() }}
                             </div>
                         </template>
 

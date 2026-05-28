@@ -48,21 +48,16 @@ class Handler extends ExceptionHandler
             //
         });
 
-        // Manejar errores de autorización (403) en peticiones Inertia
-        // Esto incluye errores desde FormRequest::authorize() y Gates/Policies
         $this->renderable(function (AuthorizationException $e, Request $request) {
-            // Solo interceptar peticiones POST/PUT/PATCH/DELETE con header X-Inertia
             if ($request->header('X-Inertia') && 
                 in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'])) {
                 
-                // Retornar respuesta JSON simple que el cliente puede interceptar
                 return response()->json([
                     'message' => $e->getMessage() ?: 'No tienes permisos para realizar esta acción.',
                 ], 403);
             }
         });
 
-        // Manejar HttpException 403 (abort(403))
         $this->renderable(function (HttpException $e, Request $request) {
             if ($e->getStatusCode() === 403 && 
                 $request->header('X-Inertia') && 

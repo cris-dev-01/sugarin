@@ -16,20 +16,12 @@ class StorePatientRequest extends FormRequest
         return $this->user()->can('create-patients', User::class);
     }
 
-    /**
-     * Mensaje personalizado cuando falla la autorización
-     */
-    protected function failedAuthorization()
-    {
-        throw new AuthorizationException('No tienes permisos para crear pacientes.');
-    }
-
     public function rules(): array
     {
         return [
             "glucose_range_id" => "required|numeric|exists:glucose_ranges,id",
-            "name" => "required|string|max:255|unique:patients,name",
-            "email" => "required|email|max:255|unique:patients,email",
+            "name" => "required|string|max:255|unique:users,name",
+            "email" => "required|email|max:255|unique:users,email",
             "document" => "required|max:12|unique:user_patients,document",
             "illness_found_at" => "required|date",
             "initial_max_glucose_value" => "required|numeric|min:0"

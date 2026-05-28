@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->enum('document_type', ['rut']);
             $table->string('document', 20);
-            $table->timestamp('illness_found_at');
+            $table->date('illness_found_at');
             $table->smallInteger('initial_max_glucose_value');
             $table->foreignId('user_id');
             $table->foreignId('glucose_range_id');

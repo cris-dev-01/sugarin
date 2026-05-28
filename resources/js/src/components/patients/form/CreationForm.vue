@@ -83,7 +83,7 @@ const formatDocument = (event: FocusEvent) => {
     checkDocument();
 };
 
-const checkDocument = () => {
+const checkDocument = async () => {
     if (form.document === '' || form.document.length > 12) {
         return;
     }
@@ -91,9 +91,31 @@ const checkDocument = () => {
     const isValid = isRut(form.document);
     if (!isValid) {
         form.setError('document', 'El RUT ingresado no es válido.');
-    } else {
-        form.clearErrors("document");
+        return;
     }
+
+    form.clearErrors('document');
+    await isRegistered(form.document);
+};
+
+const isRegistered = async (document: string) => {
+    try {
+        const csrfToken = (window.document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
+
+        const response = await fetch(`/patients/${encodeURIComponent(document)}`, {
+            headers: {
+                'Accept': 'application/json',
+                ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.response) {
+                form.setError('document', 'Ya existe un paciente registrado con este RUT.');
+            }
+        }
+    } catch {}
 };
 
 const handleForm = async () => {
@@ -102,7 +124,7 @@ const handleForm = async () => {
     if (!v$.value.$invalid) {
         v$.value.$reset();
 
-        const handlers = useInertiaFormHandlers({
+        form.post(`/patients/`, {
             onSuccess: () => {
                 form.reset();
                 emit(
@@ -112,30 +134,15 @@ const handleForm = async () => {
                 );
                 emit("toggleSlideover", false);
             },
-            onError: () => {
+            onError: (error: any) => {
+                console.log(error)
                 emit(
                     "showNotification",
                     "No fue posible registrar el paciente, verifica los datos.",
                     "error",
                 );
             },
-            onForbidden: (message) => {
-                emit(
-                    "showNotification",
-                    message || "No tienes permisos para registrar pacientes.",
-                    "error",
-                );
-            },
-            onServerError: (message) => {
-                emit(
-                    "showNotification",
-                    message || "Ocurrió un error en el servidor. Inténtalo nuevamente.",
-                    "error",
-                );
-            },
         });
-
-        form.post(`/patients/`, handlers);
     }
 };
 </script>
