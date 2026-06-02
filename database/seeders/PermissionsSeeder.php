@@ -27,6 +27,8 @@ class PermissionsSeeder extends Seeder
 
             ['name' => 'show-patients', 'guard_name' => 'web'],
             ['name' => 'create-patients', 'guard_name' => 'web'],
+            ['name' => 'update-patients', 'guard_name' => 'web'],
+            ['name' => 'delete-patients', 'guard_name' => 'web'],
             
         ])->each(function (array $permission) {
             Permission::query()->create($permission);

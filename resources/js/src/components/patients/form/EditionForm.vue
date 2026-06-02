@@ -22,21 +22,24 @@ import {
     isRut,
 } from "@rut-toolkit/core";
 import GlucoseRangesCard from '@/components/glucose-ranges/card/GlucoseRangesCard.vue';
-import type { GlucoseRange } from "@/types";
+import type { GlucoseRange, User } from "@/types";
 
 const props = defineProps<{
     glucoseRanges: GlucoseRange[];
+    patient: User;
 }>();
 
-const selectedGlucoseRange = ref<GlucoseRange | null>(null);
+const selectedGlucoseRange = ref<GlucoseRange | null>(
+    props.glucoseRanges.find((range: GlucoseRange) => range.id === props.patient.patient.glucose_range_id) ?? null
+);
 
 const form = useForm({
-    glucose_range_id: 0,
-    name: '',
-    email: '',
-    document: '',
-    illness_found_at: '',
-    initial_max_glucose_value: null,
+    glucose_range_id: props.patient.patient.glucose_range_id,
+    name: props.patient.name,
+    email: props.patient.email,
+    document: props.patient.patient.formatted_document,
+    illness_found_at: props.patient.patient.illness_found_at,
+    initial_max_glucose_value: props.patient.patient.initial_max_glucose_value,
 });
 const rules = computed(() => ({
     glucose_range_id: {
@@ -68,6 +71,7 @@ const v$ = useVuelidate(rules, form);
 
 const emit = defineEmits<{
     (e: "showNotification", message: string, type: string): void;
+    (e: "updatePatient", range: User): void;
     (e: "toggleSlideover", value: boolean): void;
 }>();
 
@@ -101,7 +105,7 @@ const isRegistered = async (document: string) => {
     try {
         const csrfToken = (window.document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
 
-        const response = await fetch(`/patients/${encodeURIComponent(document)}`, {
+        const response = await fetch(`/patients/${encodeURIComponent(document)}?exclude=${props.patient.id}`, {
             headers: {
                 'Accept': 'application/json',
                 ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
@@ -123,21 +127,20 @@ const handleForm = async () => {
     if (!v$.value.$invalid) {
         v$.value.$reset();
 
-        form.post(`/patients/`, {
-            onSuccess: () => {
-                form.reset();
+        form.put(`/patients/${props.patient.id}`, {
+            onSuccess: (data: any) => {
                 emit(
                     "showNotification",
-                    "El paciente fue registrado correctamente.",
+                    "Registros del paciente actualizados correctamente.",
                     "success",
                 );
+                emit("updatePatient", data.props.flash.response);
                 emit("toggleSlideover", false);
             },
-            onError: (error: any) => {
-                console.log(error)
+            onError: (error) => {
                 emit(
                     "showNotification",
-                    "No fue posible registrar el paciente, verifica los datos.",
+                    "No fue posible actualizar registros del paciente, verifica los datos.",
                     "error",
                 );
             },
@@ -406,7 +409,7 @@ const handleForm = async () => {
                     class="animate-spin"
                     :size="16"
                 />
-                Registrar paciente
+                Actualizar paciente
             </button>
         </div>
     </form>

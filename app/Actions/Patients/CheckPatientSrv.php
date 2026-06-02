@@ -16,14 +16,16 @@ class CheckPatientSrv
 
     public function handle(CheckPatientDto $dto): bool
     {
-        return $this->exists($this->sanitizeDocumentWithoutVerificator($dto->document));
+        return $this->exists($this->sanitizeDocumentWithoutVerificator($dto->document), $dto->exclude);
     }
 
-    private function exists(string $document): bool
+    private function exists(string $document, ?int $exclude): bool
     {
-        return User::whereHas('patient', function ($query) use($document) {
+        return User::whereHas('patient', function ($query) use ($document) {
             $query->where('document_type', DocumentTypes::RUT->value)
                 ->where('document', $document);
-        })->exists();
+        })
+        ->when($exclude, fn ($q) => $q->where('id', '!=', $exclude))
+        ->exists();
     }
 }

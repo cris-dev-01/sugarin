@@ -10,12 +10,14 @@ class CheckPatientDto extends Data
 {
     public function __construct(
         public string $document,
+        public ?int $exclude = null,
     ) {}
 
     public static function rules(): array
     {
         return [
             'document' => ['string', 'regex:/^\d{1,2}\.\d{3}\.\d{3}-[\dKk]$/'],
+            'exclude'  => ['nullable', 'integer'],
         ];
     }
 }

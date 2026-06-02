@@ -1,10 +1,14 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Head, usePage } from "@inertiajs/vue3";
 import { 
-    CircleSlash,
+    Ellipsis,
     InboxIcon,
+    PencilOff,
     Plus,
+    UserRoundMinus,
+    UserRoundPen,
+    UserRoundX,
 } from 'lucide-vue-next';
 import AppLayout from "@/Layouts/AppLayout.vue";
 import CreationSlideover from '@/components/patients/slideover/CreationSlideover.vue';
@@ -111,7 +115,7 @@ const toggleEditionSlideover = (patient: User | null) => {
     showEditionSlideover.value = !showEditionSlideover.value;
 };
 
-const updatePatients = (patient: User) => {
+const updatePatient = (patient: User) => {
     const index = props.patients.findIndex(p => p.id === patient.id);
     if (index !== -1) {
         props.patients[index] = patient;
@@ -129,6 +133,27 @@ const removePatients = (patient: User) => {
         props.patients.splice(index, 1);
     }
 };
+
+const activeDropdown = ref<number | null>(null);
+const dropdownStyle = ref({ top: '0px', left: '0px' });
+
+const toggleDropdown = (event: MouseEvent, patientId: number) => {
+    if (activeDropdown.value === patientId) {
+        activeDropdown.value = null;
+        return;
+    }
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    dropdownStyle.value = {
+        top: `${rect.bottom + 4}px`,
+        left: `${rect.right - 128}px`,
+    };
+    activeDropdown.value = patientId;
+};
+
+const closeDropdown = () => { activeDropdown.value = null; };
+
+onMounted(() => document.addEventListener('click', closeDropdown));
+onUnmounted(() => document.removeEventListener('click', closeDropdown));
 </script>
 
 <template>
@@ -233,22 +258,63 @@ const removePatients = (patient: User) => {
                         </template>
 
                         <template #actions="data">
-                            <div class="flex gap-2">
-                                <button 
-                                    type="button" 
-                                    class="btn btn-sm btn-outline-primary"
-                                    @click="toggleEditionSlideover(data.value)"
+                            <button
+                                type="button"
+                                class="px-2"
+                                @click.stop="toggleDropdown($event, data.value.id)"
+                            >
+                                <Ellipsis :size="20" />
+                            </button>
+
+                            <Teleport to="body">
+                                <ul
+                                    v-if="activeDropdown === data.value.id"
+                                    class="fixed z-[9999] min-w-[128px] bg-white dark:bg-[#1b2e4b] shadow-md rounded border border-gray-200 dark:border-[#17263c] py-2"
+                                    :style="dropdownStyle"
+                                    @click.stop
                                 >
-                                    Editar
-                                </button>
-                                <button 
-                                    type="button" 
-                                    class="btn btn-sm btn-outline-danger"
-                                    @click="toggleDeleteModal(data.value)"
-                                >
-                                    Eliminar
-                                </button>
-                            </div>
+                                    <li>
+                                        <a
+                                            v-if="checkPermission('update-patients')"
+                                            href="javascript:;"
+                                            class="flex gap-1 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#17263c]"
+                                            @click="toggleEditionSlideover(data.value); closeDropdown()"
+                                        >
+                                            <UserRoundPen :size="18" />
+                                            Editar
+                                        </a>
+                                        <a
+                                            v-else
+                                            href="javascript:;"
+                                            class="flex opacity-50 gap-1 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#17263c]"
+                                            @click="closeDropdown()"
+                                        >
+                                            <PencilOff :size="18" />
+                                            No puedes editar
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            v-if="checkPermission('delete-patients')"
+                                            href="javascript:;"
+                                            class="flex gap-1 px-4 py-2 text-sm text-danger hover:bg-gray-100 dark:hover:bg-[#17263c]"
+                                            @click="toggleDeleteModal(data.value); closeDropdown()"
+                                        >
+                                            <UserRoundX :size="18" />
+                                            Eliminar
+                                        </a>
+                                        <a
+                                            v-else
+                                            href="javascript:;"
+                                            class="flex opacity-50 gap-1 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#17263c]"
+                                            @click="closeDropdown()"
+                                        >
+                                            <UserRoundMinus :size="18" />
+                                            No puedes eliminar
+                                        </a>
+                                    </li>
+                                </ul>
+                            </Teleport>
                         </template>
                     </vue3-datatable>
                 </div>
@@ -262,14 +328,16 @@ const removePatients = (patient: User) => {
             @showNotification="showNotification"
         />
 
-        <!-- <EditionSlideover
+         <EditionSlideover
             :isOpen="showEditionSlideover"
-            :range="selectedRange"
+            :glucoseRanges="props.glucoseRanges"
+            :patient="selectedPatient"
             @toggleEditionSlideover="toggleEditionSlideover"
-            @updateGlucoseRanges="updateGlucoseRanges"
+            @updatePatient="updatePatient"
             @showNotification="showNotification"
         />
 
+        <!--
         <DeleteModal
             v-if="selectedRange"
             :show="showDeleteModal"
