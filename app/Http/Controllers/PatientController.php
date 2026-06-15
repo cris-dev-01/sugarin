@@ -6,11 +6,13 @@ namespace App\Http\Controllers;
 
 use App\Actions\GlucoseRanges\ListGlucoseRangesSrv;
 use App\Actions\Patients\CheckPatientSrv;
+use App\Actions\Patients\DeletePatientSrv;
 use App\Actions\Patients\ListPatientsSrv;
 use App\Actions\Patients\StorePatientSrv;
 use App\Actions\Patients\UpdatePatientSrv;
 use App\DataTransferObjects\GlucoseRanges\ListGlucoseRangesDto;
 use App\DataTransferObjects\Patients\CheckPatientDto;
+use App\Models\UserPatient;
 use App\DataTransferObjects\Patients\ListPatientsDto;
 use App\DataTransferObjects\Patients\StorePatientDto;
 use App\DataTransferObjects\Patients\UpdatePatientDto;
@@ -93,5 +95,16 @@ class PatientController extends Controller
 
         return redirect()->route('patients.index')
             ->with('response', $patient);
+    }
+
+    public function destroy(
+        UserPatient $patient,
+        DeletePatientSrv $deleteSrv
+    ): RedirectResponse
+    {
+        $deleted = $deleteSrv->handle($patient);
+
+        return redirect()->route('patients.index')
+            ->with('response', $deleted);
     }
 }

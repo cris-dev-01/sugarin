@@ -337,15 +337,14 @@ onUnmounted(() => document.removeEventListener('click', closeDropdown));
             @showNotification="showNotification"
         />
 
-        <!--
         <DeleteModal
-            v-if="selectedRange"
+            v-if="selectedPatient"
             :show="showDeleteModal"
-            :range="selectedRange"
+            :patient="selectedPatient"
             @showNotification="showNotification"
-            @removeGlucoseRanges="removeGlucoseRanges"
+            @removePatients="removePatients"
             @toggleDeleteModal="toggleDeleteModal"
-        /> -->
+        />
 
         <Notification
             :isOpen="notificationIsOpen"

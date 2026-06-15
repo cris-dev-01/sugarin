@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{document}', 'checkPatient')->name('checkPatient')->can('create-patients', User::class);
                 Route::post('/', 'store')->name('store')->can('create-patients', User::class);
                 Route::put('/{id}', 'update')->name('update')->can('update-patients', User::class);
+                Route::delete('/{patient}', 'destroy')->name('destroy')->can('delete-patients', User::class);
             });
 
     Route::post('logout', [AuthenticateController::class, 'logout'])->name('logout');
