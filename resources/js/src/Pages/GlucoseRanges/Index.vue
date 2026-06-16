@@ -1,9 +1,14 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Head } from "@inertiajs/vue3";
 import { 
+    DropletOff,
+    Ellipsis,
     InboxIcon,
+    Pencil,
+    PencilOff,
     Plus,
+    Trash
 } from 'lucide-vue-next';
 import AppLayout from "@/Layouts/AppLayout.vue";
 import CreationSlideover from '@/components/glucose-ranges/slideover/CreationSlideover.vue';
@@ -11,11 +16,13 @@ import DeleteModal from '@/components/glucose-ranges/modal/DeleteModal.vue';
 import EditionSlideover from '@/components/glucose-ranges/slideover/EditionSlideover.vue';
 import Notification from "@/components/Base/Notification/Notification.vue";
 import Vue3Datatable from '@bhplugin/vue3-datatable';
+import { usePermissions } from '@/composables/usePermissions';
 import type { GlucoseRange, Notification as NotificationType } from "@/types";
 
 const props = defineProps<{
     glucoseRanges: GlucoseRange[];
 }>();
+const { checkPermission } = usePermissions();
 const paginationLang = ref({
     paginationInfo: "Mostrando {0} a {1} de {2} registros",
     noDataContent: "No hay datos disponibles"
@@ -113,6 +120,27 @@ const removeGlucoseRanges = (range: GlucoseRange) => {
         props.glucoseRanges.splice(index, 1);
     }
 };
+
+const activeDropdown = ref<number | null>(null);
+const dropdownStyle = ref({ top: '0px', left: '0px' });
+
+const toggleDropdown = (event: MouseEvent, patientId: number) => {
+    if (activeDropdown.value === patientId) {
+        activeDropdown.value = null;
+        return;
+    }
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    dropdownStyle.value = {
+        top: `${rect.bottom + 4}px`,
+        left: `${rect.right - 128}px`,
+    };
+    activeDropdown.value = patientId;
+};
+
+const closeDropdown = () => { activeDropdown.value = null; };
+
+onMounted(() => document.addEventListener('click', closeDropdown));
+onUnmounted(() => document.removeEventListener('click', closeDropdown));
 </script>
 
 <template>
@@ -180,22 +208,63 @@ const removeGlucoseRanges = (range: GlucoseRange) => {
                         </template>
 
                         <template #actions="data">
-                            <div class="flex gap-2">
-                                <button 
-                                    type="button" 
-                                    class="btn btn-sm btn-outline-primary"
-                                    @click="toggleEditionSlideover(data.value)"
+                            <button
+                                type="button"
+                                class="px-2"
+                                @click.stop="toggleDropdown($event, data.value.id)"
+                            >
+                                <Ellipsis :size="20" />
+                            </button>
+
+                            <Teleport to="body">
+                                <ul
+                                    v-if="activeDropdown === data.value.id"
+                                    class="fixed z-[9999] min-w-[128px] bg-white dark:bg-[#1b2e4b] shadow-md rounded border border-gray-200 dark:border-[#17263c] py-2"
+                                    :style="dropdownStyle"
+                                    @click.stop
                                 >
-                                    Editar
-                                </button>
-                                <button 
-                                    type="button" 
-                                    class="btn btn-sm btn-outline-danger"
-                                    @click="toggleDeleteModal(data.value)"
-                                >
-                                    Eliminar
-                                </button>
-                            </div>
+                                    <li>
+                                        <a
+                                            v-if="checkPermission('update-glucose-ranges')"
+                                            href="javascript:;"
+                                            class="flex gap-1 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#17263c]"
+                                            @click="toggleEditionSlideover(data.value); closeDropdown()"
+                                        >
+                                            <Pencil :size="18" />
+                                            Editar
+                                        </a>
+                                        <a
+                                            v-else
+                                            href="javascript:;"
+                                            class="flex opacity-50 gap-1 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#17263c]"
+                                            @click="closeDropdown()"
+                                        >
+                                            <PencilOff :size="18" />
+                                            No puedes editar
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            v-if="checkPermission('delete-glucose-ranges')"
+                                            href="javascript:;"
+                                            class="flex gap-1 px-4 py-2 text-sm text-danger hover:bg-gray-100 dark:hover:bg-[#17263c]"
+                                            @click="toggleDeleteModal(data.value); closeDropdown()"
+                                        >
+                                            <Trash :size="18" />
+                                            Eliminar
+                                        </a>
+                                        <a
+                                            v-else
+                                            href="javascript:;"
+                                            class="flex opacity-50 gap-1 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#17263c]"
+                                            @click="closeDropdown()"
+                                        >
+                                            <DropletOff :size="18" />
+                                            No puedes eliminar
+                                        </a>
+                                    </li>
+                                </ul>
+                            </Teleport>
                         </template>
                     </vue3-datatable>
                 </div>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { Head, usePage } from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
 import { 
     Ellipsis,
     InboxIcon,
@@ -16,13 +16,14 @@ import DeleteModal from '@/components/patients/modal/DeleteModal.vue';
 import EditionSlideover from '@/components/patients/slideover/EditionSlideover.vue';
 import Notification from "@/components/Base/Notification/Notification.vue";
 import Vue3Datatable from '@bhplugin/vue3-datatable';
-import type { GlucoseRange, User, Notification as NotificationType, PageProps } from "@/types";
+import { usePermissions } from '@/composables/usePermissions';
+import type { GlucoseRange, User, Notification as NotificationType } from "@/types";
 
 const props = defineProps<{
     patients: User[];
     glucoseRanges: GlucoseRange[];
 }>();
-const page = usePage<PageProps>();
+const { checkPermission } = usePermissions();
 const paginationLang = ref({
     paginationInfo: "Mostrando {0} a {1} de {2} registros",
     noDataContent: "No hay datos disponibles"
@@ -96,10 +97,6 @@ const showCreationSlideover = ref(false);
 const showEditionSlideover = ref(false);
 const showDeleteModal = ref(false);
 const selectedPatient = ref<User | null>(null);
-
-const checkPermission = (permission: string) => {
-    return page.props.auth.user && page.props.auth.user.permissions.includes(permission);
-};
 
 const toggleCreationSlideover = () => {
     showCreationSlideover.value = !showCreationSlideover.value;
