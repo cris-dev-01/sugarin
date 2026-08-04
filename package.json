@@ -3,7 +3,9 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "cy:open": "cypress open",
+        "cy:run": "cypress run"
     },
     "dependencies": {
         "@bhplugin/vue3-datatable": "^1.0.3",
@@ -30,6 +32,7 @@
         "pinia": "^2.0.22",
         "sweetalert2": "^11.5.1",
         "swiper": "^11.1.9",
+        "tesseract.js": "^7.0.0",
         "tippy.vue": "^3.2.1",
         "v-tables-3": "^0.4.7",
         "vue": "^3.2.37",
@@ -59,6 +62,7 @@
         "@tailwindcss/typography": "^0.5.14",
         "@vitejs/plugin-vue": "^5.1.2",
         "autoprefixer": "^10.4.17",
+        "cypress": "^15.19.0",
         "laravel-vite-plugin": "^1.0.5",
         "postcss": "^8.4.35",
         "tailwindcss": "^3.4.1",

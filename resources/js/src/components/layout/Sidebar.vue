@@ -100,8 +100,10 @@ const toggleMobileMenu = () => {
                                 </div>
                             </a>
                         </li>
-                        <li class="menu nav-item">
-                            <a href="/" class="nav-link group" @click="toggleMobileMenu">
+                        <li 
+                            v-if="isAdministrator || isPatient"
+                            class="menu nav-item">
+                            <a href="/glucose-logs" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <Droplets
                                         :size="20"

@@ -39,4 +39,9 @@ class UserPatient extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function glucoseRange(): BelongsTo
+    {
+        return $this->belongsTo(GlucoseRange::class);
+    }
 }

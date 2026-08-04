@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Auth\AuthenticateController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GlucoseLogController;
 use App\Http\Controllers\GlucoseRangeController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientSummaryController;
 use App\Models\GlucoseRange;
 use App\Models\User;
+use App\Models\UserGlucoseLog;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -40,6 +42,13 @@ Route::middleware('auth')->group(function () {
                 Route::post('/', 'store')->name('store')->can('create-patients', User::class);
                 Route::put('/{id}', 'update')->name('update')->can('update-patients', User::class);
                 Route::delete('/{patient}', 'destroy')->name('destroy')->can('delete-patients', User::class);
+            });
+
+    Route::prefix('glucose-logs')->name('glucose-logs.')
+        ->controller(GlucoseLogController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index')->can('show-glucose-logs', UserGlucoseLog::class);
+                Route::post('/', 'store')->name('store')->can('create-glucose-logs', UserGlucoseLog::class);
             });
 
     Route::post('logout', [AuthenticateController::class, 'logout'])->name('logout');
