@@ -25,31 +25,43 @@ Route::middleware('auth')->group(function () {
         ->name('index')
         ->can('show-summary', User::class);
 
+    Route::get('/patients/{patient}/summary', [DashboardController::class, 'patientSummary'])
+        ->name('dashboard.patient-summary')
+        ->can('show-dashboard', User::class);
+
+    Route::get('/dashboard/triage-patients', [DashboardController::class, 'triagePatients'])
+        ->name('dashboard.triage-patients')
+        ->can('show-dashboard', User::class);
+
     Route::prefix('glucose-ranges')->name('glucose-ranges.')
         ->controller(GlucoseRangeController::class)
-            ->group(function () {
-                Route::get('/', 'index')->name('index')->can('show-glucose-ranges', GlucoseRange::class);
-                Route::post('/', 'store')->name('store')->can('create-glucose-ranges', GlucoseRange::class);
-                Route::put('/{id}', 'update')->name('update')->can('update-glucose-ranges', GlucoseRange::class);
-                Route::delete('/{id}', 'destroy')->name('destroy')->can('delete-glucose-ranges', GlucoseRange::class);
-            });
+        ->group(function () {
+            Route::get('/', 'index')->name('index')->can('show-glucose-ranges', GlucoseRange::class);
+            Route::post('/', 'store')->name('store')->can('create-glucose-ranges', GlucoseRange::class);
+            Route::put('/{id}', 'update')->name('update')->can('update-glucose-ranges', GlucoseRange::class);
+            Route::delete('/{id}', 'destroy')->name('destroy')->can('delete-glucose-ranges', GlucoseRange::class);
+        });
 
     Route::prefix('patients')->name('patients.')
         ->controller(PatientController::class)
-            ->group(function () {
-                Route::get('/', 'index')->name('index')->can('show-patients', User::class);
-                Route::get('/{document}', 'checkPatient')->name('checkPatient')->can('create-patients', User::class);
-                Route::post('/', 'store')->name('store')->can('create-patients', User::class);
-                Route::put('/{id}', 'update')->name('update')->can('update-patients', User::class);
-                Route::delete('/{patient}', 'destroy')->name('destroy')->can('delete-patients', User::class);
-            });
+        ->group(function () {
+            Route::get('/', 'index')->name('index')->can('show-patients', User::class);
+            Route::get('/{document}', 'checkPatient')->name('checkPatient')->can('create-patients', User::class);
+            Route::post('/', 'store')->name('store')->can('create-patients', User::class);
+            Route::put('/{id}', 'update')->name('update')->can('update-patients', User::class);
+            Route::delete('/{patient}', 'destroy')->name('destroy')->can('delete-patients', User::class);
+        });
 
     Route::prefix('glucose-logs')->name('glucose-logs.')
         ->controller(GlucoseLogController::class)
-            ->group(function () {
-                Route::get('/', 'index')->name('index')->can('show-glucose-logs', UserGlucoseLog::class);
-                Route::post('/', 'store')->name('store')->can('create-glucose-logs', UserGlucoseLog::class);
-            });
+        ->group(function () {
+            Route::get('/', 'index')->name('index')->can('show-glucose-logs', UserGlucoseLog::class);
+            Route::post('/', 'store')->name('store')->can('create-glucose-logs', UserGlucoseLog::class);
+        });
+
+    Route::get('/patients/{patient}/glucose-logs', [GlucoseLogController::class, 'forPatient'])
+        ->name('glucose-logs.for-patient')
+        ->can('show-glucose-logs', UserGlucoseLog::class);
 
     Route::post('logout', [AuthenticateController::class, 'logout'])->name('logout');
 });

@@ -9,6 +9,7 @@ export type PageProps<
 };
 
 export * from "./form";
+export * from "./glucoseDashboard";
 export * from "./glucoseLog";
 export * from "./glucoseRange";
 export * from "./notification";

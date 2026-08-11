@@ -8,6 +8,7 @@
         "cy:run": "cypress run"
     },
     "dependencies": {
+        "@amcharts/amcharts5": "^5.20.1",
         "@bhplugin/vue3-datatable": "^1.0.3",
         "@fullcalendar/core": "^6.1.15",
         "@fullcalendar/daygrid": "^6.1.15",
