@@ -258,7 +258,7 @@
                                                 <div class="text-black/60 dark:text-dark-light/60 text-xs truncate">{{ authUser?.email }}</div>
                                                 <span
                                                     class="text-xs bg-primary-light rounded text-primary px-1.5 py-0.5 inline-block mt-1 dark:bg-primary dark:text-primary-light"
-                                                    >{{ authUser?.role }}</span
+                                                    >{{ authUser?.role_label }}</span
                                                 >
                                             </div>
                                         </div>

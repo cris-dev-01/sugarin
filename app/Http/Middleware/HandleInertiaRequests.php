@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -38,16 +39,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => fn () => $request->user() ? 
-                    (object)[
-                        'id' => $request->user()->id,
-                        'name' => $request->user()->name,
-                        'email' => $request->user()->email,
-                        'created_at' => $request->user()->created_at,
-                        'role' => $request->user()->roles()->pluck('name')[0],
-                        'permissions' => $request->user()->getAllPermissions()->pluck('name'),
-                    ] : 
-                    null,
+                'user' => fn () => $request->user() ? $this->shareAuthUser($request->user()) : null,
                 'authenticated' => auth()->check(),
             ],
             'flash' => [
@@ -55,6 +47,21 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+        ];
+    }
+
+    private function shareAuthUser(User $user): object
+    {
+        $role = $user->roles()->first();
+
+        return (object) [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'created_at' => $user->created_at,
+            'role' => $role?->name,
+            'role_label' => $role?->label,
+            'permissions' => $user->getAllPermissions()->pluck('name'),
         ];
     }
 }

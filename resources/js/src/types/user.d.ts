@@ -5,5 +5,6 @@ export interface User {
     patient: Patient;
     permissions: string[];
     role: string;
+    role_label: string;
     created_at: Date;
 }
