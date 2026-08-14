@@ -33,7 +33,7 @@
 
 <template>
     <!--  BEGIN MAIN CONTAINER  -->
-    <div class="relative">
+    <div class="relative" :class="[store.menu, store.layout, store.rtlClass, { 'toggle-sidebar': store.sidebar }]">
         <!-- sidebar menu overlay -->
         <div class="fixed inset-0 bg-[black]/60 z-50 lg:hidden" :class="{ hidden: !store.sidebar }" @click="store.toggleSidebar()"></div>
 

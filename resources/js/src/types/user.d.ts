@@ -4,5 +4,6 @@ export interface User {
     email: string;
     patient: Patient;
     permissions: string[];
+    role: string;
     created_at: Date;
 }

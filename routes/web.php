@@ -6,6 +6,7 @@ use App\Http\Controllers\GlucoseLogController;
 use App\Http\Controllers\GlucoseRangeController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientSummaryController;
+use App\Http\Controllers\ProfileController;
 use App\Models\GlucoseRange;
 use App\Models\User;
 use App\Models\UserGlucoseLog;
@@ -62,6 +63,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/patients/{patient}/glucose-logs', [GlucoseLogController::class, 'forPatient'])
         ->name('glucose-logs.for-patient')
         ->can('show-glucose-logs', UserGlucoseLog::class);
+
+    Route::prefix('profile')->name('profile.')
+        ->controller(ProfileController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::put('/', 'update')->name('update');
+            Route::put('/password', 'updatePassword')->name('update-password');
+        });
 
     Route::post('logout', [AuthenticateController::class, 'logout'])->name('logout');
 });

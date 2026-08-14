@@ -13,4 +13,5 @@ export * from "./glucoseDashboard";
 export * from "./glucoseLog";
 export * from "./glucoseRange";
 export * from "./notification";
+export * from "./patient";
 export * from "./user";

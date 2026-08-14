@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, computed } from 'vue';
 import { useAppStore } from '@/stores/index';
-import { usePage } from "@inertiajs/vue3";
+import { usePage, Link } from "@inertiajs/vue3";
 import { 
     ChartColumn,
     Cog,
@@ -12,8 +12,8 @@ import type { PageProps } from '@/types';
 
 const page = usePage<PageProps>();
 const store = useAppStore();
-const isAdministrator = computed(() => page.props.auth.user.role === 'Administrator' ? true : false);
-const isPatient = computed(() => page.props.auth.user.role === 'Patient' ? true : false);
+const isAdministrator = computed(() => page.props.auth.user?.role === 'Administrator' ? true : false);
+const isPatient = computed(() => page.props.auth.user?.role === 'Patient' ? true : false);
 
 onMounted(() => {
     const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');
@@ -78,45 +78,45 @@ const toggleMobileMenu = () => {
                             v-if="isAdministrator"
                             class="menu nav-item"
                         >
-                            <a href="/" class="nav-link group" @click="toggleMobileMenu">
+                            <Link href="/" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <ChartColumn
                                         :size="20"
                                     />
                                     <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Dashboard</span>
                                 </div>
-                            </a>
+                            </Link>
                         </li>
                         <li 
                             v-if="isPatient"
                             class="menu nav-item"
                         >
-                            <a href="/summary" class="nav-link group" @click="toggleMobileMenu">
+                            <Link href="/summary" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <ChartColumn
                                         :size="20"
                                     />
                                     <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Mi Resumen</span>
                                 </div>
-                            </a>
+                            </Link>
                         </li>
                         <li 
                             v-if="isAdministrator || isPatient"
                             class="menu nav-item">
-                            <a href="/glucose-logs" class="nav-link group" @click="toggleMobileMenu">
+                            <Link href="/glucose-logs" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <Droplets
                                         :size="20"
                                     />
                                     <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Tomar Muestra</span>
                                 </div>
-                            </a>
+                            </Link>
                         </li>
                         <li 
                             v-if="isAdministrator"
                             class="menu nav-item"
                         >
-                            <a href="/glucose-ranges" class="nav-link group" @click="toggleMobileMenu">
+                            <Link href="/glucose-ranges" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <Cog
                                         :size="20"
@@ -125,20 +125,20 @@ const toggleMobileMenu = () => {
                                         Parámetros
                                     </span>
                                 </div>
-                            </a>
+                            </Link>
                         </li>
                         <li 
                             v-if="isAdministrator"
                             class="menu nav-item"
                         >
-                            <a href="/patients" class="nav-link group" @click="toggleMobileMenu">
+                            <Link href="/patients" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <UsersRound
                                         :size="20"
                                     />
                                     <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Pacientes</span>
                                 </div>
-                            </a>
+                            </Link>
                         </li>
                     </ul>
                 </perfect-scrollbar>
