@@ -20,7 +20,10 @@ const emit = defineEmits<{
             @click="emit('select', 'low_recent')"
         >
             <div class="absolute -bottom-12 h-28 w-28 ltr:-right-12 rtl:-left-12">
-                <Info class="h-full w-20 text-danger opacity-30" />
+                <Info 
+                    class="h-full w-20 opacity-30"
+                    :class="props.triage.low_recent_count > 0 ? 'text-white' : 'text-danger'"    
+                />
             </div>
             <div class="flex items-center justify-between">
                 <div class="text-md font-semibold">Pacientes con hipoglucemia reciente</div>

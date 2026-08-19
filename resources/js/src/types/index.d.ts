@@ -1,3 +1,4 @@
+import type { AppNotification } from './notification';
 import type { User } from './user';
 
 export type PageProps<
@@ -6,6 +7,7 @@ export type PageProps<
     auth: {
         user: User|null;
     };
+    notifications: AppNotification[];
 };
 
 export * from "./form";

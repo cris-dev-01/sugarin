@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GlucoseLogController;
 use App\Http\Controllers\GlucoseRangeController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PatientSummaryController;
 use App\Http\Controllers\ProfileController;
 use App\Models\GlucoseRange;
@@ -70,6 +71,14 @@ Route::middleware('auth')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::put('/', 'update')->name('update');
             Route::put('/password', 'updatePassword')->name('update-password');
+        });
+
+    Route::prefix('notifications')->name('notifications.')
+        ->controller(NotificationController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::patch('/read-all', 'markAllAsRead')->name('read-all');
+            Route::patch('/{id}/read', 'markAsRead')->name('read');
         });
 
     Route::post('logout', [AuthenticateController::class, 'logout'])->name('logout');

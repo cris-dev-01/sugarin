@@ -151,95 +151,67 @@
                                     <path d="M12 6V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                                 </svg>
 
-                                <span class="flex absolute w-3 h-3 ltr:right-0 rtl:left-0 top-0">
+                                <span v-if="notifications.length" class="flex absolute w-3 h-3 ltr:right-0 rtl:left-0 top-0">
                                     <span
-                                        class="animate-ping absolute ltr:-left-[3px] rtl:-right-[3px] -top-[3px] inline-flex h-full w-full rounded-full bg-success/50 opacity-75"
+                                        class="animate-ping absolute ltr:-left-[3px] rtl:-right-[3px] -top-[3px] inline-flex h-full w-full rounded-full bg-danger/50 opacity-75"
                                     ></span>
-                                    <span class="relative inline-flex rounded-full w-[6px] h-[6px] bg-success"></span>
+                                    <span class="relative inline-flex rounded-full w-[6px] h-[6px] bg-danger"></span>
                                 </span>
                             </button>
                             <template #content="{ close }">
                                 <ul class="!py-0 text-dark dark:text-white-dark w-[300px] sm:w-[350px] divide-y dark:divide-white/10">
                                     <li>
                                         <div class="flex items-center px-4 py-2 justify-between font-semibold">
-                                            <h4 class="text-lg">Notification</h4>
+                                            <h4 class="text-lg">Notificaciones</h4>
                                             <template v-if="notifications.length">
-                                                <span class="badge bg-primary/80" v-text="notifications.length + 'New'"></span>
+                                                <span class="badge bg-primary/80" v-text="unreadBadgeText"></span>
                                             </template>
                                         </div>
                                     </li>
                                     <template v-for="notification in notifications" :key="notification.id">
                                         <li class="dark:text-white-light/90">
-                                            <div class="group flex items-center px-4 py-2">
-                                                <div class="grid place-content-center rounded">
-                                                    <div class="w-12 h-12 relative">
-                                                        <img
-                                                            class="w-12 h-12 rounded-full object-cover"
-                                                            :src="`/assets/images/${notification.profile}`"
-                                                            alt=""
-                                                        />
-                                                        <span class="bg-success w-2 h-2 rounded-full block absolute right-[6px] bottom-0"></span>
-                                                    </div>
-                                                </div>
-                                                <div class="ltr:pl-3 rtl:pr-3 flex flex-auto">
-                                                    <div class="ltr:pr-3 rtl:pl-3">
-                                                        <h6 v-html="notification.message"></h6>
-                                                        <span class="text-xs block font-normal dark:text-gray-500" v-text="notification.time"></span>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        class="ltr:ml-auto rtl:mr-auto text-neutral-300 hover:text-danger opacity-0 group-hover:opacity-100"
-                                                        @click="removeNotification(notification.id)"
-                                                    >
-                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
-                                                            <path
-                                                                d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5"
-                                                                stroke="currentColor"
-                                                                stroke-width="1.5"
-                                                                stroke-linecap="round"
-                                                            />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </template>
-                                    <template v-if="notifications.length">
-                                        <li>
-                                            <div class="p-4">
-                                                <button class="btn btn-primary block w-full btn-small" @click="close()">Read All Notifications</button>
-                                            </div>
+                                            <NotificationCard
+                                                :notification="notification"
+                                                :show-unread-indicator="false"
+                                                @click="markAsRead(notification.id)"
+                                            />
                                         </li>
                                     </template>
                                     <template v-if="!notifications.length">
                                         <li>
                                             <div class="!grid place-content-center hover:!bg-transparent text-lg min-h-[200px]">
                                                 <div class="mx-auto ring-4 ring-primary/30 rounded-full mb-4 text-primary">
-                                                    <svg width="40" height="40" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            opacity="0.5"
-                                                            d="M20 10C20 4.47715 15.5228 0 10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20C15.5228 20 20 15.5228 20 10Z"
-                                                            fill="currentColor"
-                                                        />
-                                                        <path
-                                                            d="M10 4.25C10.4142 4.25 10.75 4.58579 10.75 5V11C10.75 11.4142 10.4142 11.75 10 11.75C9.58579 11.75 9.25 11.4142 9.25 11V5C9.25 4.58579 9.58579 4.25 10 4.25Z"
-                                                            fill="currentColor"
-                                                        />
-                                                        <path
-                                                            d="M10 15C10.5523 15 11 14.5523 11 14C11 13.4477 10.5523 13 10 13C9.44772 13 9 13.4477 9 14C9 14.5523 9.44772 15 10 15Z"
-                                                            fill="currentColor"
-                                                        />
-                                                    </svg>
+                                                    <CheckCircle :size="40" />
                                                 </div>
-                                                No data available.
+                                                Sin novedades por ahora.
                                             </div>
                                         </li>
                                     </template>
+                                    <li>
+                                        <div class="flex gap-2 p-4">
+                                            <button
+                                                v-if="notifications.length"
+                                                type="button"
+                                                class="btn btn-primary flex-1 btn-small"
+                                                @click="markAllAsRead(); close()"
+                                            >
+                                                Marcar todas como leídas
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-primary flex-1 btn-small"
+                                                @click="showNotificationsDrawer = true; close()"
+                                            >
+                                                Ver todas
+                                            </button>
+                                        </div>
+                                    </li>
                                 </ul>
                             </template>
                         </Popper>
                     </div>
+
+                    <NotificationsDrawer :show="showNotificationsDrawer" @close="showNotificationsDrawer = false" />
 
                     <div class="dropdown shrink-0">
                         <Popper :placement="store.rtlClass === 'rtl' ? 'bottom-end' : 'bottom-start'" offsetDistance="8" class="!block">
@@ -1023,11 +995,15 @@
 <script lang="ts" setup>
     import { ref, computed, onMounted, watch } from 'vue';
     import { Link, usePage } from '@inertiajs/vue3';
+    import { CheckCircle } from 'lucide-vue-next';
 
     import { useRoute as useVueRoute } from 'vue-router';
     import { useZiggyRoute } from '@/composables/useRoute';
+    import { useNotifications } from '@/composables/useNotifications';
     import { useAppStore } from '@/stores/index';
     import Avatar from '@/components/Base/Avatar/Avatar.vue';
+    import NotificationCard from '@/components/notifications/card/NotificationCard.vue';
+    import NotificationsDrawer from '@/components/notifications/drawer/NotificationsDrawer.vue';
     import type { PageProps } from '@/types';
 
     const store = useAppStore();
@@ -1037,27 +1013,10 @@
 
     const page = usePage<PageProps>();
     const authUser = computed(() => page.props.auth.user);
-
-    const notifications = ref([
-        {
-            id: 1,
-            profile: 'user-profile.jpeg',
-            message: '<strong class="text-sm mr-1">John Doe</strong>invite you to <strong>Prototyping</strong>',
-            time: '45 min ago',
-        },
-        {
-            id: 2,
-            profile: 'profile-34.jpeg',
-            message: '<strong class="text-sm mr-1">Adam Nolan</strong>mentioned you to <strong>UX Basics</strong>',
-            time: '9h Ago',
-        },
-        {
-            id: 3,
-            profile: 'profile-16.jpeg',
-            message: '<strong class="text-sm mr-1">Anna Morgan</strong>Upload a file',
-            time: '9h Ago',
-        },
-    ]);
+    const notifications = computed(() => page.props.notifications);
+    const { markAsRead, markAllAsRead } = useNotifications();
+    const showNotificationsDrawer = ref(false);
+    const unreadBadgeText = computed(() => `${notifications.value.length} ${notifications.value.length === 1 ? 'nueva' : 'nuevas'}`);
 
     onMounted(() => {
         setActiveDropdown();
@@ -1086,9 +1045,5 @@
                 }
             }
         }
-    };
-
-    const removeNotification = (value: number) => {
-        notifications.value = notifications.value.filter((d) => d.id !== value);
     };
 </script>

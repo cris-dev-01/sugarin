@@ -9,6 +9,7 @@ use App\Enums\TimeBlock;
 use App\Models\Status;
 use App\Models\UserGlucoseLog;
 use App\Models\UserPatient;
+use App\Notifications\GlucoseLogRegisteredNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -40,7 +41,7 @@ class StoreGlucoseLogSrv
 
         $this->getStatus($dto->value);
 
-        return DB::transaction(function () use ($dto) {
+        $log = DB::transaction(function () use ($dto) {
             return UserGlucoseLog::create([
                 'value' => $dto->value,
                 'time_block' => $this->timeBlock->value,
@@ -48,13 +49,23 @@ class StoreGlucoseLogSrv
                 'status_id' => $this->status->id,
             ]);
         });
+
+        $this->notifyPatient($log);
+
+        return $log;
     }
 
     private function getPatient(int $id): self
     {
-        $this->patient = UserPatient::with('glucoseRange')->findOrFail($id);
+        $this->patient = UserPatient::with(['glucoseRange', 'user'])->findOrFail($id);
 
         return $this;
+    }
+
+    private function notifyPatient(UserGlucoseLog $log): void
+    {
+        $log->setRelation('status', $this->status);
+        $this->patient->user->notify(new GlucoseLogRegisteredNotification($log));
     }
 
     private function getTimeBlock(): self

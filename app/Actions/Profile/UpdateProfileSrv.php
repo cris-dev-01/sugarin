@@ -6,6 +6,7 @@ namespace App\Actions\Profile;
 
 use App\DataTransferObjects\Profile\UpdateProfileDto;
 use App\Models\User;
+use App\Notifications\ProfileUpdatedNotification;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class UpdateProfileSrv
@@ -16,6 +17,8 @@ class UpdateProfileSrv
     {
         $user = User::findOrFail($dto->id);
         $user->update($dto->only('name', 'email')->toArray());
+
+        $user->notify(new ProfileUpdatedNotification());
 
         return $user;
     }

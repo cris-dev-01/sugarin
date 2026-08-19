@@ -81,7 +81,7 @@ function closeTriageModal() {
 
                 <template v-if="summary">
                     <div
-                        class="sticky shadow-sm top-[70px] z-10 -mx-6 mb-6 flex flex-wrap items-center justify-between gap-4 bg-white px-5 py-3 dark:bg-[#0e1726] lg:mx-0 lg:px-0"
+                        class="sticky shadow-sm top-[57px] z-10 -mx-6 mb-6 flex flex-wrap items-center justify-between gap-4 bg-white px-5 py-3 dark:bg-[#0e1726] lg:mx-0 lg:px-0"
                     >
                         <div class="flex items-center rounded-full bg-primary/80 p-1 px-3 font-semibold text-white">
                             Paciente: <span class="pl-1 font-light">{{ summary.patient.name }}</span>

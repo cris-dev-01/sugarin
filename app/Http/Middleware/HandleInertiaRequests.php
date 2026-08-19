@@ -47,6 +47,11 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            'notifications' => fn () => $request->user()
+                ? $request->user()->unreadNotifications()
+                    ->limit(config('notifications.shared_unread_limit'))
+                    ->get()
+                : [],
         ];
     }
 

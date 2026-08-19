@@ -8,12 +8,14 @@ use App\Models\GlucoseRange;
 use App\Models\Status;
 use App\Models\User;
 use App\Models\UserPatient;
+use App\Notifications\GlucoseLogRegisteredNotification;
 use Carbon\Carbon;
 use Database\Seeders\PermissionsSeeder;
 use Database\Seeders\RolesPermissionsSeeder;
 use Database\Seeders\RolesSeeder;
 use Database\Seeders\StatusesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class StoreGlucoseLogTest extends TestCase
@@ -204,5 +206,59 @@ class StoreGlucoseLogTest extends TestCase
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors('user_patient_id');
+    }
+
+    public function test_it_notifies_the_patient_for_a_reading_within_the_normal_range(): void
+    {
+        Notification::fake();
+        $this->actingAsAdministrator();
+
+        $patient = $this->createPatient([
+            'min_fasting_value' => 70,
+            'max_fasting_value' => 100,
+        ]);
+
+        $this->postJson('/glucose-logs', [
+            'user_patient_id' => $patient->id,
+            'value' => 90,
+        ])->assertCreated();
+
+        Notification::assertSentTo($patient->user, GlucoseLogRegisteredNotification::class, function ($notification, $channels) {
+            return $channels === ['database', 'mail'];
+        });
+    }
+
+    public function test_it_notifies_the_patient_for_a_reading_out_of_range(): void
+    {
+        Notification::fake();
+        $this->actingAsAdministrator();
+
+        $patient = $this->createPatient([
+            'min_fasting_value' => 70,
+            'max_fasting_value' => 100,
+        ]);
+
+        $this->postJson('/glucose-logs', [
+            'user_patient_id' => $patient->id,
+            'value' => 180,
+        ])->assertCreated();
+
+        Notification::assertSentTo($patient->user, GlucoseLogRegisteredNotification::class);
+    }
+
+    public function test_it_does_not_notify_when_the_log_fails_to_register(): void
+    {
+        Notification::fake();
+        $this->actingAsAdministrator();
+
+        $patient = $this->createPatient();
+        $patient->glucoseRange->delete();
+
+        $this->postJson('/glucose-logs', [
+            'user_patient_id' => $patient->id,
+            'value' => 90,
+        ])->assertUnprocessable();
+
+        Notification::assertNothingSent();
     }
 }

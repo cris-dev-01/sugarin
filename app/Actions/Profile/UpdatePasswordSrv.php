@@ -6,6 +6,7 @@ namespace App\Actions\Profile;
 
 use App\DataTransferObjects\Profile\UpdatePasswordDto;
 use App\Models\User;
+use App\Notifications\PasswordUpdatedNotification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -28,6 +29,8 @@ class UpdatePasswordSrv
         }
 
         $user->update(['password' => Hash::make($dto->password)]);
+
+        $user->notify(new PasswordUpdatedNotification());
 
         return $user;
     }
