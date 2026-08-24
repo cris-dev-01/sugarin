@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\GlucoseDashboard;
 
+use App\Actions\Settings\GetDashboardSettingsSrv;
 use App\DataTransferObjects\GlucoseDashboard\PatientSummaryDto;
 use App\Enums\TimeBlock;
 use App\Models\UserGlucoseLog;
@@ -18,7 +19,8 @@ class GetPatientSummarySrv
     private const RECENT_LOGS_LIMIT = 20;
 
     public function __construct(
-        private readonly CalculatePatientStreak $calculateStreak
+        private readonly CalculatePatientStreak $calculateStreak,
+        private readonly GetDashboardSettingsSrv $settingsSrv
     ) {}
 
     /**
@@ -87,7 +89,7 @@ class GetPatientSummarySrv
 
     private function adherencePercentage(int $periodDays, int $loggedCount): float
     {
-        $expectedLogs = (int) config('glucose_dashboard.expected_logs_per_day') * $periodDays;
+        $expectedLogs = $this->settingsSrv->handle()->expected_logs_per_day * $periodDays;
 
         return $expectedLogs > 0 ? round($loggedCount / $expectedLogs * 100, 1) : 0.0;
     }

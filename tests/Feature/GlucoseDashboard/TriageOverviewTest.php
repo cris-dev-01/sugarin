@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Database\Seeders\PermissionsSeeder;
 use Database\Seeders\RolesPermissionsSeeder;
 use Database\Seeders\RolesSeeder;
+use Database\Seeders\SettingsSeeder;
 use Database\Seeders\StatusesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -27,7 +28,7 @@ class TriageOverviewTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([PermissionsSeeder::class, RolesSeeder::class, RolesPermissionsSeeder::class, StatusesSeeder::class]);
+        $this->seed([PermissionsSeeder::class, RolesSeeder::class, RolesPermissionsSeeder::class, StatusesSeeder::class, SettingsSeeder::class]);
         $this->travelTo(Carbon::create(2026, 1, 15, 12, 0, 0));
     }
 

@@ -2,13 +2,15 @@
 
 use App\Http\Controllers\Auth\AuthenticateController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardSettingsController;
 use App\Http\Controllers\GlucoseLogController;
 use App\Http\Controllers\GlucoseRangeController;
-use App\Http\Controllers\PatientController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientSummaryController;
 use App\Http\Controllers\ProfileController;
 use App\Models\GlucoseRange;
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\UserGlucoseLog;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +44,13 @@ Route::middleware('auth')->group(function () {
             Route::post('/', 'store')->name('store')->can('create-glucose-ranges', GlucoseRange::class);
             Route::put('/{id}', 'update')->name('update')->can('update-glucose-ranges', GlucoseRange::class);
             Route::delete('/{id}', 'destroy')->name('destroy')->can('delete-glucose-ranges', GlucoseRange::class);
+        });
+
+    Route::prefix('dashboard-settings')->name('dashboard-settings.')
+        ->controller(DashboardSettingsController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index')->can('show-dashboard-settings', Setting::class);
+            Route::put('/', 'update')->name('update')->can('update-dashboard-settings', Setting::class);
         });
 
     Route::prefix('patients')->name('patients.')

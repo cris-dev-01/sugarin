@@ -10,6 +10,7 @@ use App\Models\UserPatient;
 use Database\Seeders\PermissionsSeeder;
 use Database\Seeders\RolesPermissionsSeeder;
 use Database\Seeders\RolesSeeder;
+use Database\Seeders\SettingsSeeder;
 use Database\Seeders\StatusesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -23,7 +24,7 @@ class PatientOwnSummaryTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([PermissionsSeeder::class, RolesSeeder::class, RolesPermissionsSeeder::class, StatusesSeeder::class]);
+        $this->seed([PermissionsSeeder::class, RolesSeeder::class, RolesPermissionsSeeder::class, StatusesSeeder::class, SettingsSeeder::class]);
     }
 
     public function test_user_without_permission_cannot_view_the_page(): void

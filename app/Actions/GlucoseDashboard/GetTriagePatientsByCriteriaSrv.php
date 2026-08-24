@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\GlucoseDashboard;
 
+use App\Actions\Settings\GetDashboardSettingsSrv;
 use App\DataTransferObjects\GlucoseDashboard\TriagePatientsDto;
 use App\Models\Status;
 use App\Models\UserGlucoseLog;
@@ -15,6 +16,10 @@ use Lorisleiva\Actions\Concerns\AsAction;
 class GetTriagePatientsByCriteriaSrv
 {
     use AsAction;
+
+    public function __construct(
+        private readonly GetDashboardSettingsSrv $settingsSrv
+    ) {}
 
     /**
      * @return array{criteria: string, patients: list<array<string, mixed>>}
@@ -39,7 +44,7 @@ class GetTriagePatientsByCriteriaSrv
     private function patientsWithLowRecentEvent(): array
     {
         $lowStatusId = Status::where('name', 'Bajo - fuera de rango normal')->value('id');
-        $windowStart = now()->subHours((int) config('glucose_dashboard.recent_event_window_hours'));
+        $windowStart = now()->subHours($this->settingsSrv->handle()->recent_event_window_hours);
 
         return UserGlucoseLog::query()
             ->where('status_id', $lowStatusId)
@@ -64,7 +69,7 @@ class GetTriagePatientsByCriteriaSrv
      */
     private function patientsWithoutRecentLog(): array
     {
-        $windowHours = (int) config('glucose_dashboard.recent_event_window_hours');
+        $windowHours = $this->settingsSrv->handle()->recent_event_window_hours;
         $lastLogAt = $this->lastLogAtByPatient();
 
         return UserPatient::with('user')
@@ -90,7 +95,7 @@ class GetTriagePatientsByCriteriaSrv
      */
     private function patientsInGoodControl(): array
     {
-        $goodControlThreshold = (float) config('glucose_dashboard.good_control_threshold');
+        $goodControlThreshold = $this->settingsSrv->handle()->good_control_threshold;
         $periodStats = $this->periodStatsByPatient();
 
         return UserPatient::with('user')
@@ -123,7 +128,7 @@ class GetTriagePatientsByCriteriaSrv
     private function periodStatsByPatient(): Collection
     {
         $normalStatusId = Status::where('name', 'Rango normal')->value('id');
-        $referenceDays = (int) config('glucose_dashboard.good_control_reference_period_days');
+        $referenceDays = $this->settingsSrv->handle()->good_control_reference_period_days;
 
         return UserGlucoseLog::query()
             ->where('created_at', '>=', now()->subDays($referenceDays))

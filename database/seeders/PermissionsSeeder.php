@@ -29,9 +29,14 @@ class PermissionsSeeder extends Seeder
             ['name' => 'create-patients', 'guard_name' => 'web'],
             ['name' => 'update-patients', 'guard_name' => 'web'],
             ['name' => 'delete-patients', 'guard_name' => 'web'],
-            
+
+            ['name' => 'show-dashboard-settings', 'guard_name' => 'web'],
+            ['name' => 'update-dashboard-settings', 'guard_name' => 'web'],
+
         ])->each(function (array $permission) {
-            Permission::query()->create($permission);
+            Permission::query()->firstOrCreate(
+                ['name' => $permission['name'], 'guard_name' => $permission['guard_name']]
+            );
         });
     }
 }

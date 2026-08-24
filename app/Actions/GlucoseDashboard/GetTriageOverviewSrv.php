@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\GlucoseDashboard;
 
+use App\Actions\Settings\GetDashboardSettingsSrv;
 use App\Models\Status;
 use App\Models\UserGlucoseLog;
 use App\Models\UserPatient;
@@ -13,6 +14,10 @@ use Lorisleiva\Actions\Concerns\AsAction;
 class GetTriageOverviewSrv
 {
     use AsAction;
+
+    public function __construct(
+        private readonly GetDashboardSettingsSrv $settingsSrv
+    ) {}
 
     /**
      * @return array{
@@ -30,24 +35,23 @@ class GetTriageOverviewSrv
      */
     public function handle(): array
     {
-        $windowHours = (int) config('glucose_dashboard.recent_event_window_hours');
-        $goodControlThreshold = (float) config('glucose_dashboard.good_control_threshold');
+        $settings = $this->settingsSrv->handle();
 
-        $patients = $this->buildRiskProfiles($windowHours);
+        $patients = $this->buildRiskProfiles($settings->recent_event_window_hours, $settings->good_control_reference_period_days);
 
         return [
             'low_recent_count' => $patients->where('has_low_recent', true)->count(),
             'inactive_count' => $patients->where('is_inactive', true)->count(),
-            'good_control_percentage' => $this->goodControlPercentage($patients, $goodControlThreshold),
+            'good_control_percentage' => $this->goodControlPercentage($patients, $settings->good_control_threshold),
             'patients' => $this->formatPatients($patients),
         ];
     }
 
-    private function buildRiskProfiles(int $windowHours): Collection
+    private function buildRiskProfiles(int $windowHours, int $referenceDays): Collection
     {
         $lastLogAt = $this->lastLogAtByPatient();
         $lowRecentPatientIds = $this->lowRecentPatientIds($windowHours);
-        $periodStats = $this->periodStatsByPatient();
+        $periodStats = $this->periodStatsByPatient($referenceDays);
 
         return UserPatient::with('user')
             ->get()
@@ -168,12 +172,12 @@ class GetTriageOverviewSrv
             ->flip();
     }
 
-    private function periodStatsByPatient(): Collection
+    private function periodStatsByPatient(int $referenceDays): Collection
     {
         $normalStatusId = Status::where('name', 'Rango normal')->value('id');
 
         return UserGlucoseLog::query()
-            ->where('created_at', '>=', now()->subDays((int) config('glucose_dashboard.good_control_reference_period_days')))
+            ->where('created_at', '>=', now()->subDays($referenceDays))
             ->selectRaw('user_patient_id, COUNT(*) as total, SUM(CASE WHEN status_id = ? THEN 1 ELSE 0 END) as normal_count', [$normalStatusId])
             ->groupBy('user_patient_id')
             ->get()

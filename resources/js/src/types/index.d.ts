@@ -10,6 +10,7 @@ export type PageProps<
     notifications: AppNotification[];
 };
 
+export * from "./dashboardSettings";
 export * from "./form";
 export * from "./glucoseDashboard";
 export * from "./glucoseLog";

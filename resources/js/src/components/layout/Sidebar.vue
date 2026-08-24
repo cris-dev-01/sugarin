@@ -2,16 +2,19 @@
 import { onMounted, computed } from 'vue';
 import { useAppStore } from '@/stores/index';
 import { usePage, Link } from "@inertiajs/vue3";
-import { 
+import {
     ChartColumn,
     Cog,
     Droplets,
+    SlidersHorizontal,
     UsersRound
 } from 'lucide-vue-next';
+import { usePermissions } from '@/composables/usePermissions';
 import type { PageProps } from '@/types';
 
 const page = usePage<PageProps>();
 const store = useAppStore();
+const { checkPermission } = usePermissions();
 const isAdministrator = computed(() => page.props.auth.user?.role === 'Administrator' ? true : false);
 const isPatient = computed(() => page.props.auth.user?.role === 'Patient' ? true : false);
 
@@ -128,7 +131,7 @@ const toggleMobileMenu = () => {
                                 </div>
                             </Link>
                         </li>
-                        <li 
+                        <li
                             v-if="isAdministrator"
                             class="menu nav-item"
                         >
@@ -138,6 +141,21 @@ const toggleMobileMenu = () => {
                                         :size="20"
                                     />
                                     <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Pacientes</span>
+                                </div>
+                            </Link>
+                        </li>
+                        <li
+                            v-if="checkPermission('show-dashboard-settings')"
+                            class="menu nav-item"
+                        >
+                            <Link href="/dashboard-settings" class="nav-link group" @click="toggleMobileMenu">
+                                <div class="flex items-center">
+                                    <SlidersHorizontal
+                                        :size="20"
+                                    />
+                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">
+                                        Configuración dashboard
+                                    </span>
                                 </div>
                             </Link>
                         </li>
