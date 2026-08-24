@@ -45,7 +45,8 @@ const toggleMobileMenu = () => {
             <div class="bg-white dark:bg-[#0e1726] h-full">
                 <div class="flex justify-between items-center px-4 py-3">
                     <a href="/" class="main-logo flex items-center shrink-0">
-                        <img class="w-8 ml-[5px] flex-none" src="/assets/images/logo.svg" alt="" />
+                        <img src="/assets/images/logos/logo-light.png" alt="Sugarin" class="w-8 h-8 dark:hidden" />
+                        <img src="/assets/images/logos/logo-dark.png" alt="Sugarin" class="hidden w-8 h-8 dark:block" />
                         <span class="text-2xl ltr:ml-1.5 rtl:mr-1.5 font-semibold align-middle lg:inline dark:text-white-light">SugarIn</span>
                     </a>
                     <a

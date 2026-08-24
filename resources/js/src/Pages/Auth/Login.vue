@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { Head } from "@inertiajs/vue3";
 import AuthLayout from "@/Layouts/AuthLayout.vue";
-import LoginForm from "@/Pages/Auth/Partials/Form/LoginForm.vue";
+import LoginForm from "@/components/auth/form/LoginForm.vue";
 </script>
 
 <template>
@@ -25,9 +25,13 @@ import LoginForm from "@/Pages/Auth/Partials/Form/LoginForm.vue";
                     <div class="relative flex flex-col justify-center rounded-md bg-white/60 px-6 py-20 backdrop-blur-lg dark:bg-black/50 lg:min-h-[758px]">
                     
                         <div class="mx-auto w-full max-w-[440px]">
-                            <div class="mb-10">
-                                <h1 class="text-3xl font-extrabold !leading-snug text-primary md:text-4xl">SugarIn</h1>
-                                <p class="text-base font-bold leading-normal text-white-dark">Ingresa a tu cuenta para continuar</p>
+                            <div class="flex justify-center items-center mb-8">
+                                <img src="/assets/images/logos/logo-light.png" alt="Sugarin" class="w-20 h-20 dark:hidden" />
+                                <img src="/assets/images/logos/logo-dark.png" alt="Sugarin" class="hidden w-20 h-20 dark:block" />
+                                <h1 class="text-3xl font-extrabold !leading-snug md:text-4xl">SugarIn</h1>
+                            </div>
+                            <div class="mb-2">
+                                <p class="text-base leading-normal text-white-dark">Ingresa a tu cuenta para continuar</p>
                             </div>
                             
                             <LoginForm

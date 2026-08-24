@@ -4,10 +4,11 @@
             <div class="relative bg-white flex w-full items-center px-5 py-2.5 dark:bg-[#0e1726]">
                 <div class="horizontal-logo flex lg:hidden justify-between items-center ltr:mr-2 rtl:ml-2">
                     <router-link to="/" class="main-logo flex items-center shrink-0">
-                        <img class="w-8 ltr:-ml-1 rtl:-mr-1 inline" src="/assets/images/logo.svg" alt="" />
+                        <img src="/assets/images/logos/logo-light.png" alt="Sugarin" class="w-8 h-8 dark:hidden" />
+                        <img src="/assets/images/logos/logo-dark.png" alt="Sugarin" class="hidden w-8 h-8 dark:block" />
                         <span
                             class="text-2xl ltr:ml-1.5 rtl:mr-1.5 font-semibold align-middle hidden md:inline dark:text-white-light transition-all duration-300"
-                            >VRISTO</span
+                            >SugarIn</span
                         >
                     </router-link>
 
@@ -997,7 +998,6 @@
     import { Link, usePage } from '@inertiajs/vue3';
     import { CheckCircle } from 'lucide-vue-next';
 
-    import { useRoute as useVueRoute } from 'vue-router';
     import { useZiggyRoute } from '@/composables/useRoute';
     import { useNotifications } from '@/composables/useNotifications';
     import { useAppStore } from '@/stores/index';
@@ -1007,7 +1007,6 @@
     import type { PageProps } from '@/types';
 
     const store = useAppStore();
-    const vueRoute = useVueRoute();
     const route = useZiggyRoute();
     const search = ref(false);
 
