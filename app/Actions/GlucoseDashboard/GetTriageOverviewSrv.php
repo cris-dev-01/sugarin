@@ -24,6 +24,8 @@ class GetTriageOverviewSrv
      *     low_recent_count: int,
      *     inactive_count: int,
      *     good_control_percentage: float,
+     *     recent_event_window_hours: int,
+     *     good_control_threshold_percentage: float,
      *     patients: list<array{
      *         id: int,
      *         name: string,
@@ -43,6 +45,8 @@ class GetTriageOverviewSrv
             'low_recent_count' => $patients->where('has_low_recent', true)->count(),
             'inactive_count' => $patients->where('is_inactive', true)->count(),
             'good_control_percentage' => $this->goodControlPercentage($patients, $settings->good_control_threshold),
+            'recent_event_window_hours' => $settings->recent_event_window_hours,
+            'good_control_threshold_percentage' => round($settings->good_control_threshold * 100, 1),
             'patients' => $this->formatPatients($patients),
         ];
     }

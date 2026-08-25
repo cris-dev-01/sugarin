@@ -10,6 +10,8 @@ export interface TriageOverview {
     low_recent_count: number;
     inactive_count: number;
     good_control_percentage: number;
+    recent_event_window_hours: number;
+    good_control_threshold_percentage: number;
     patients: TriagePatientRisk[];
 }
 

@@ -29,7 +29,7 @@ const emit = defineEmits<{
                 <div class="text-md font-semibold">Pacientes con hipoglucemia reciente</div>
             </div>
             <div class="mt-5 text-3xl font-bold">{{ props.triage.low_recent_count }}</div>
-            <div class="mt-2 text-sm opacity-80">Lectura "Bajo" en las últimas 48 horas.</div>
+            <div class="mt-2 text-sm opacity-80">Lectura "Bajo" en las últimas {{ props.triage.recent_event_window_hours }} horas.</div>
         </button>
 
         <button
@@ -44,7 +44,7 @@ const emit = defineEmits<{
                 <div class="text-md font-semibold">Pacientes sin registro reciente</div>
             </div>
             <div class="mt-5 text-3xl font-bold dark:text-white-light">{{ props.triage.inactive_count }}</div>
-            <div class="mt-2 text-sm text-white-dark">Sin ninguna lectura en las últimas 48 horas.</div>
+            <div class="mt-2 text-sm text-white-dark">Sin ninguna lectura en las últimas {{ props.triage.recent_event_window_hours }} horas.</div>
         </button>
 
         <button
@@ -59,7 +59,7 @@ const emit = defineEmits<{
                 <div class="text-md font-semibold">Pacientes en buen control</div>
             </div>
             <div class="mt-5 text-3xl font-bold dark:text-white-light">{{ props.triage.good_control_percentage }}%</div>
-            <div class="mt-2 text-sm text-white-dark">Con al menos 80% de sus lecturas en rango normal.</div>
+            <div class="mt-2 text-sm text-white-dark">Con al menos {{ props.triage.good_control_threshold_percentage }}% de sus lecturas en rango normal.</div>
         </button>
     </div>
 </template>
