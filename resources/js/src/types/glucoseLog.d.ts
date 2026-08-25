@@ -1,6 +1,8 @@
 export interface GlucoseLogPatient {
     id: number;
     name: string;
+    email: string;
+    formatted_document: string;
 }
 
 export interface GlucoseLogStatus {

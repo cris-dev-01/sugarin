@@ -67,6 +67,8 @@ export interface PatientSummary {
     patient: {
         id: number;
         name: string;
+        email: string;
+        formatted_document: string;
     };
     period_days: number;
     in_range_percentage: PatientSummaryInRangePercentage;

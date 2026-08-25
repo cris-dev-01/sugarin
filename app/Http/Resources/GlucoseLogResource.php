@@ -19,6 +19,8 @@ class GlucoseLogResource extends JsonResource
             'user_patient' => $this->whenLoaded('userPatient', fn () => [
                 'id' => $this->userPatient->id,
                 'name' => optional($this->userPatient->user)->name,
+                'email' => optional($this->userPatient->user)->email,
+                'formatted_document' => $this->userPatient->formatted_document,
             ]),
             'status' => $this->whenLoaded('status', fn () => [
                 'id' => $this->status->id,

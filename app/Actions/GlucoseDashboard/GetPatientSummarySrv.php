@@ -77,13 +77,15 @@ class GetPatientSummarySrv
     }
 
     /**
-     * @return array{id: int, name: string}
+     * @return array{id: int, name: string, email: string, formatted_document: string}
      */
     private function formatPatient(UserPatient $patient): array
     {
         return [
             'id' => $patient->id,
             'name' => $patient->user?->name ?? '',
+            'email' => $patient->user?->email ?? '',
+            'formatted_document' => $patient->formatted_document,
         ];
     }
 

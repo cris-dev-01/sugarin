@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
-import { 
+import {
     ChevronLeft,
     CircleCheckBig,
 } from 'lucide-vue-next';
+import PatientCard from '@/components/patients/card/PatientCard.vue';
 import type { User } from '@/types';
 
 
@@ -40,15 +41,8 @@ function submit() {
 <template>
     <div class="max-w-lg mx-auto">
         <h2 class="text-xl font-semibold mb-4 dark:text-white-light">Confirmar lectura</h2>
-        <div class="mb-6 flex items-center justify-between">
-            <div class="flex items-center rounded-full bg-primary/80 p-1 font-semibold text-white ltr:pr-3 rtl:pl-3">
-                <img
-                    class="block h-8 w-8 rounded-full border-2 border-white/50 object-cover ltr:mr-1 rtl:ml-1"
-                    src="/assets/images/profile-34.jpeg"
-                    alt=""
-                />
-                Paciente: <span class="pl-1 font-light">{{ patient.name }}</span>
-            </div>
+        <div class="mb-6">
+            <PatientCard :name="patient.name" :email="patient.email" :document="patient.patient.formatted_document" />
         </div>
 
         <div class="panel p-6">

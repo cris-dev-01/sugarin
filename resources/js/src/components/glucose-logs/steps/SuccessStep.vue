@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { CheckCircle, TriangleAlert } from 'lucide-vue-next';
+import PatientCard from '@/components/patients/card/PatientCard.vue';
 import type { GlucoseLog } from '@/types';
 
 const props = defineProps<{
@@ -45,15 +46,8 @@ const valueColorClass = computed(() => valueColorClasses[alertLevel.value]);
         <h2 class="text-2xl font-bold mb-2 dark:text-white-light">Lectura registrada</h2>
         <p class="text-gray-500 dark:text-[#506690] mb-8">El registro fue guardado correctamente.</p>
 
-        <div class="mb-6 flex items-center justify-between">
-            <div class="flex items-center rounded-full bg-primary/80 p-1 font-semibold text-white ltr:pr-3 rtl:pl-3">
-                <img
-                    class="block h-8 w-8 rounded-full border-2 border-white/50 object-cover ltr:mr-1 rtl:ml-1"
-                    src="/assets/images/profile-34.jpeg"
-                    alt=""
-                />
-                Paciente: <span class="pl-1 font-light">{{ log.user_patient.name }}</span>
-            </div>
+        <div class="mb-6 flex justify-center">
+            <PatientCard :name="log.user_patient.name" :email="log.user_patient.email" :document="log.user_patient.formatted_document" />
         </div>
 
         <div

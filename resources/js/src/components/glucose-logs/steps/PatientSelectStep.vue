@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue';
-import { UserRound } from 'lucide-vue-next';
+import PatientCard from '@/components/patients/card/PatientCard.vue';
 import type { User } from '@/types';
 
 const props = defineProps<{
@@ -27,16 +27,10 @@ onMounted(() => {
                 v-for="patient in patients"
                 :key="patient.id"
                 type="button"
-                class="w-full flex items-center gap-4 p-4 rounded-lg border border-gray-200 dark:border-[#17263c] bg-white dark:bg-[#1b2e4b] hover:border-primary hover:shadow-sm transition-all text-left"
+                class="w-full flex items-center p-4 rounded-lg border border-gray-200 dark:border-[#17263c] bg-white dark:bg-[#1b2e4b] hover:border-primary hover:shadow-sm transition-all text-left"
                 @click="emit('select', patient)"
             >
-                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                    <UserRound :size="20" />
-                </div>
-                <div>
-                    <p class="font-semibold dark:text-white-light">{{ patient.name }}</p>
-                    <p class="text-sm text-gray-500 dark:text-[#506690]">{{ patient.email }}</p>
-                </div>
+                <PatientCard :name="patient.name" :email="patient.email" :document="patient.patient.formatted_document" />
             </button>
         </div>
     </div>

@@ -10,6 +10,7 @@ import RecentReadingsLog from '@/components/dashboard/cards/RecentReadingsLog.vu
 import StatusDistributionBars from '@/components/dashboard/cards/StatusDistributionBars.vue';
 import TrendChart from '@/components/dashboard/charts/TrendChart.vue';
 import TriagePatientsModal from '@/components/dashboard/modal/TriagePatientsModal.vue';
+import PatientCard from '@/components/patients/card/PatientCard.vue';
 import type { TriageOverview, PatientSummary, SummaryPeriod, TriageCriteria } from '@/types';
 
 const props = defineProps<{
@@ -93,11 +94,13 @@ onMounted(() => {
                 <template v-if="summary">
                     <div
                         ref="summaryHeaderRef"
-                        class="sticky shadow-sm top-[57px] z-10 -mx-6 mb-6 flex flex-wrap items-center justify-between gap-4 bg-white px-5 py-3 dark:bg-[#0e1726] lg:mx-0 lg:px-0"
+                        class="sticky shadow-sm top-[0px] z-10 -mx-6 mb-6 flex flex-wrap items-center justify-between gap-4 bg-white px-5 py-3 dark:bg-[#0e1726] md:mx-0 "
                     >
-                        <div class="flex items-center rounded-full bg-primary/80 p-1 px-3 font-semibold text-white">
-                            Paciente: <span class="pl-1 font-light">{{ summary.patient.name }}</span>
-                        </div>
+                        <PatientCard
+                            :name="summary.patient.name"
+                            :email="summary.patient.email"
+                            :document="summary.patient.formatted_document"
+                        />
                         <div class="flex gap-2">
                             <button
                                 v-for="option in PERIOD_OPTIONS"
