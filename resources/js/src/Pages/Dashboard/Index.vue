@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TriageCards from '@/components/dashboard/cards/TriageCards.vue';
@@ -25,6 +25,7 @@ const period = ref<SummaryPeriod>(30);
 const isLoading = ref(false);
 const selectedCriteria = ref<TriageCriteria | null>(null);
 const showTriageModal = ref(false);
+const summaryHeaderRef = ref<HTMLElement | null>(null);
 
 async function loadSummary(patientId: number, selectedPeriod: SummaryPeriod) {
     isLoading.value = true;
@@ -64,6 +65,16 @@ function onSelectCriteria(criteria: TriageCriteria) {
 function closeTriageModal() {
     showTriageModal.value = false;
 }
+
+onMounted(() => {
+    const requestedPatientId = new URLSearchParams(window.location.search).get('patient');
+
+    if (requestedPatientId && summary.value && String(summary.value.patient.id) === requestedPatientId) {
+        nextTick(() => {
+            summaryHeaderRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
+});
 </script>
 
 <template>
@@ -81,6 +92,7 @@ function closeTriageModal() {
 
                 <template v-if="summary">
                     <div
+                        ref="summaryHeaderRef"
                         class="sticky shadow-sm top-[57px] z-10 -mx-6 mb-6 flex flex-wrap items-center justify-between gap-4 bg-white px-5 py-3 dark:bg-[#0e1726] lg:mx-0 lg:px-0"
                     >
                         <div class="flex items-center rounded-full bg-primary/80 p-1 px-3 font-semibold text-white">

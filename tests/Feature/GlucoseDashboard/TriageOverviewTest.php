@@ -201,4 +201,39 @@ class TriageOverviewTest extends TestCase
 
         $response->assertInertia(fn (Assert $page) => $page->where('triage.patients.0.name', 'Mas Inactivo'));
     }
+
+    public function test_patient_query_param_preloads_that_patients_summary(): void
+    {
+        $this->actingAsAdministrator();
+
+        $riskyPatient = $this->createPatient('Riesgo');
+        $this->createLogAt($riskyPatient, 'Bajo - fuera de rango normal', now()->subHours(5));
+
+        $otherPatient = $this->createPatient('Otro');
+        $this->createLogAt($otherPatient, 'Rango normal', now()->subHours(1));
+
+        $response = $this->get('/?patient='.$otherPatient->id);
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('triage.patients.0.name', 'Riesgo')
+            ->where('summary.patient.id', $otherPatient->id)
+            ->where('summary.patient.name', 'Otro')
+        );
+    }
+
+    public function test_invalid_patient_query_param_falls_back_to_default_selection(): void
+    {
+        $this->actingAsAdministrator();
+
+        $riskyPatient = $this->createPatient('Riesgo');
+        $this->createLogAt($riskyPatient, 'Bajo - fuera de rango normal', now()->subHours(5));
+
+        $response = $this->get('/?patient=999999');
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('summary.patient.id', $riskyPatient->id)
+        );
+    }
 }

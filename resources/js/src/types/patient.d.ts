@@ -6,3 +6,9 @@ export interface Patient {
     illness_found_at: Date;
     initial_max_glucose_value: number;
 }
+
+export interface PatientSearchResult {
+    id: number;
+    name: string;
+    formatted_document: string;
+}

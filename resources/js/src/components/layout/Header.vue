@@ -27,40 +27,76 @@
                 <div
                     class="sm:flex-1 ltr:sm:ml-0 ltr:ml-auto sm:rtl:mr-0 rtl:mr-auto flex items-center space-x-1.5 lg:space-x-2 rtl:space-x-reverse dark:text-[#d0d2d6]"
                 >
-                    <div class="sm:ltr:mr-auto sm:rtl:ml-auto">
+                    <div class="sm:ltr:mr-auto sm:rtl:ml-auto" ref="searchContainerRef">
                         <form
                             class="sm:relative absolute inset-x-0 sm:top-0 top-1/2 sm:translate-y-0 -translate-y-1/2 sm:mx-0 mx-4 z-10 sm:block hidden"
                             :class="{ '!block': search }"
-                            @submit.prevent="search = false"
+                            @submit.prevent="onSearchSubmit"
                         >
-                            <div class="relative">
-                                <input
-                                    type="text"
-                                    class="form-input ltr:pl-9 rtl:pr-9 ltr:sm:pr-4 rtl:sm:pl-4 ltr:pr-9 rtl:pl-9 peer sm:bg-transparent bg-gray-100 placeholder:tracking-widest"
-                                    placeholder="Search..."
-                                />
-                                <button type="button" class="absolute w-9 h-9 inset-0 ltr:right-auto rtl:left-auto appearance-none peer-focus:text-primary">
-                                    <svg class="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" />
-                                        <path d="M18.5 18.5L22 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                    </svg>
-                                </button>
-                                <button
-                                    type="button"
-                                    class="hover:opacity-80 sm:hidden block absolute top-1/2 -translate-y-1/2 ltr:right-2 rtl:left-2"
-                                    @click="search = false"
-                                >
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
-                                        <path
-                                            d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5"
-                                            stroke="currentColor"
-                                            stroke-width="1.5"
-                                            stroke-linecap="round"
-                                        />
-                                    </svg>
-                                </button>
-                            </div>
+                            <Popper :show="isResultsPanelOpen" placement="bottom-start" offsetDistance="8" :disableClickAway="true" class="!block w-full">
+                                <div class="relative">
+                                    <input
+                                        type="text"
+                                        v-model="searchQuery"
+                                        class="form-input ltr:pl-9 rtl:pr-9 ltr:sm:pr-4 rtl:sm:pl-4 ltr:pr-9 rtl:pl-9 peer sm:bg-transparent bg-gray-100 "
+                                        placeholder="Buscar paciente..."
+                                        autocomplete="off"
+                                        @input="onSearchInput"
+                                        @keydown="onSearchKeydown"
+                                        @focus="onSearchFocus"
+                                    />
+                                    <button type="button" class="absolute w-9 h-9 inset-0 ltr:right-auto rtl:left-auto appearance-none peer-focus:text-primary">
+                                        <svg class="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" />
+                                            <path d="M18.5 18.5L22 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        </svg>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="hover:opacity-80 sm:hidden block absolute top-1/2 -translate-y-1/2 ltr:right-2 rtl:left-2"
+                                        @click="closeSearch"
+                                    >
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
+                                            <path
+                                                d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5"
+                                                stroke="currentColor"
+                                                stroke-width="1.5"
+                                                stroke-linecap="round"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <template #content>
+                                    <div
+                                        class="w-[300px] sm:w-[350px] max-h-[320px] overflow-y-auto rounded-md border border-white-light bg-white py-2 text-dark shadow dark:border-[#1b2e4b] dark:bg-[#1b2e4b] dark:text-white-dark"
+                                    >
+                                        <div v-if="isSearching" class="flex justify-center py-4">
+                                            <span
+                                                class="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-black !border-l-transparent dark:border-white"
+                                            ></span>
+                                        </div>
+                                        <template v-else>
+                                            <ul v-if="searchResults.length" class="!py-0 divide-y dark:divide-white/10">
+                                                <li v-for="(patient, index) in searchResults" :key="patient.id">
+                                                    <button
+                                                        type="button"
+                                                        class="flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-white-light/90 dark:hover:bg-dark/60"
+                                                        :class="{ 'bg-white-light/90 dark:bg-dark/60': index === activeResultIndex }"
+                                                        @mousedown.prevent="selectPatient(patient)"
+                                                    >
+                                                        <span class="truncate">{{ patient.name }}</span>
+                                                        <span class="ltr:ml-2 rtl:mr-2 shrink-0 text-xs text-white-dark">{{
+                                                            patient.formatted_document
+                                                        }}</span>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                            <p v-else class="px-4 py-4 text-sm text-white-dark">Sin resultados para «{{ searchQuery }}».</p>
+                                        </template>
+                                    </div>
+                                </template>
+                            </Popper>
                         </form>
 
                         <button
@@ -994,8 +1030,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, computed, onMounted, watch } from 'vue';
-    import { Link, usePage } from '@inertiajs/vue3';
+    import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+    import { Link, router, usePage } from '@inertiajs/vue3';
     import { CheckCircle } from 'lucide-vue-next';
 
     import { useZiggyRoute } from '@/composables/useRoute';
@@ -1004,11 +1040,109 @@
     import Avatar from '@/components/Base/Avatar/Avatar.vue';
     import NotificationCard from '@/components/notifications/card/NotificationCard.vue';
     import NotificationsDrawer from '@/components/notifications/drawer/NotificationsDrawer.vue';
-    import type { PageProps } from '@/types';
+    import type { PageProps, PatientSearchResult } from '@/types';
 
     const store = useAppStore();
     const route = useZiggyRoute();
     const search = ref(false);
+
+    const MIN_SEARCH_LENGTH = 2;
+    const SEARCH_DEBOUNCE_MS = 300;
+
+    const searchContainerRef = ref<HTMLElement | null>(null);
+    const searchQuery = ref('');
+    const searchResults = ref<PatientSearchResult[]>([]);
+    const isSearching = ref(false);
+    const isResultsPanelOpen = ref(false);
+    const activeResultIndex = ref(-1);
+    let searchDebounceTimer: ReturnType<typeof setTimeout> | undefined;
+
+    function onSearchInput() {
+        clearTimeout(searchDebounceTimer);
+        activeResultIndex.value = -1;
+
+        const query = searchQuery.value.trim();
+
+        if (query.length < MIN_SEARCH_LENGTH) {
+            searchResults.value = [];
+            isResultsPanelOpen.value = false;
+            return;
+        }
+
+        isResultsPanelOpen.value = true;
+        searchDebounceTimer = setTimeout(() => performSearch(query), SEARCH_DEBOUNCE_MS);
+    }
+
+    function onSearchFocus() {
+        if (searchQuery.value.trim().length >= MIN_SEARCH_LENGTH) {
+            isResultsPanelOpen.value = true;
+        }
+    }
+
+    function onSearchSubmit() {
+        search.value = false;
+    }
+
+    async function performSearch(query: string) {
+        isSearching.value = true;
+
+        try {
+            const response = await fetch(`/patients/search?q=${encodeURIComponent(query)}`, {
+                headers: { Accept: 'application/json' },
+            });
+
+            if (response.ok) {
+                const body = await response.json();
+                searchResults.value = body.data as PatientSearchResult[];
+            }
+        } finally {
+            isSearching.value = false;
+        }
+    }
+
+    function selectPatient(patient: PatientSearchResult) {
+        closeSearch();
+        router.visit(route('index', { patient: patient.id }));
+    }
+
+    function closeSearch() {
+        isResultsPanelOpen.value = false;
+        searchQuery.value = '';
+        searchResults.value = [];
+        activeResultIndex.value = -1;
+        search.value = false;
+    }
+
+    function onSearchKeydown(event: KeyboardEvent) {
+        if (event.key === 'Escape') {
+            closeSearch();
+            return;
+        }
+
+        if (!isResultsPanelOpen.value || !searchResults.value.length) {
+            return;
+        }
+
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            activeResultIndex.value = (activeResultIndex.value + 1) % searchResults.value.length;
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            activeResultIndex.value = activeResultIndex.value <= 0 ? searchResults.value.length - 1 : activeResultIndex.value - 1;
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            const active = searchResults.value[activeResultIndex.value] ?? searchResults.value[0];
+            if (active) {
+                selectPatient(active);
+            }
+        }
+    }
+
+    function handleSearchClickOutside(event: MouseEvent) {
+        if (searchContainerRef.value && !searchContainerRef.value.contains(event.target as Node)) {
+            isResultsPanelOpen.value = false;
+        }
+    }
 
     const page = usePage<PageProps>();
     const authUser = computed(() => page.props.auth.user);
@@ -1019,6 +1153,12 @@
 
     onMounted(() => {
         setActiveDropdown();
+        document.addEventListener('click', handleSearchClickOutside);
+    });
+
+    onUnmounted(() => {
+        document.removeEventListener('click', handleSearchClickOutside);
+        clearTimeout(searchDebounceTimer);
     });
 
     watch(route, (to, from) => {

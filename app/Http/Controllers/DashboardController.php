@@ -15,16 +15,22 @@ use App\Http\Resources\PatientSummaryResource;
 use App\Http\Resources\TriagePatientsResource;
 use App\Models\UserPatient;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function index(GetTriageOverviewSrv $triageSrv, GetPatientSummarySrv $summarySrv): Response
+    public function index(Request $request, GetTriageOverviewSrv $triageSrv, GetPatientSummarySrv $summarySrv): Response
     {
         $triage = $triageSrv->handle();
 
-        $selectedPatientId = $triage['patients'][0]['id'] ?? null;
+        $visiblePatientIds = collect($triage['patients'])->pluck('id');
+        $requestedPatientId = $request->integer('patient') ?: null;
+
+        $selectedPatientId = $requestedPatientId && $visiblePatientIds->contains($requestedPatientId)
+            ? $requestedPatientId
+            : $visiblePatientIds->first();
 
         $summary = $selectedPatientId
             ? $summarySrv->handle(PatientSummaryDto::from(['user_patient_id' => $selectedPatientId]))
