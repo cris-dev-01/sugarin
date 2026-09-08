@@ -8,6 +8,7 @@
 .env
 .env.backup
 .env.production
+.env.testing
 Homestead.json
 Homestead.yaml
 auth.json
@@ -17,3 +18,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/.claude
+/CLAUDE.md
+/cypress/videos
+/cypress/screenshots
+/cypress/downloads
