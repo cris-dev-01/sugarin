@@ -68,7 +68,7 @@ const showNotification = (message: string, type: string) => {
                         />
                         <div
                             v-else
-                            class="bg-warning/60 text-[#842029] p-4 rounded-md text-center"
+                            class="dark:bg-warning/60 bg-warning/60 text-white p-4 rounded-md text-center"
                         >
                             <div class="flex gap-1">
                                 <DropletOff
